@@ -38,29 +38,29 @@ PySimpleGUI, tkinter
 import os
 import time
 
-import fitz
+import pymupdf
 import PySimpleGUI as sg
 
 mytime = time.perf_counter
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 
-if not list(map(int, fitz.VersionBind.split("."))) >= [1, 14, 5]:
+if not list(map(int, pymupdf.VersionBind.split("."))) >= [1, 14, 5]:
     raise SystemExit(
         "need PyMuPDF v1.14.5 for this script"
     )  # define some global constants
 gold = (1, 1, 0)
 blue = (0, 0, 1)
-pagerect = fitz.Rect(0, 0, 400, 400)  # dimension of our image
+pagerect = pymupdf.Rect(0, 0, 400, 400)  # dimension of our image
 
-mp = fitz.Point(pagerect.width / 2.0, pagerect.height / 2.0)  # center of the page
+mp = pymupdf.Point(pagerect.width / 2.0, pagerect.height / 2.0)  # center of the page
 pwidth = pagerect.width
 pheight = pagerect.height
-r = fitz.Rect(mp, mp + (80, 80))  # rext for text box
+r = pymupdf.Rect(mp, mp + (80, 80))  # rext for text box
 tl = r.tl
 text = "Just some demo text, to be filled in a rect."
 
-textpoint = fitz.Point(40, 50)  # start position of this text:
-itext = "X-Shear Morphing:\nfitz.Matrix(%g, 0, 1)"
+textpoint = pymupdf.Point(40, 50)  # start position of this text:
+itext = "X-Shear Morphing:\npymupdf.Matrix(%g, 0, 1)"
 
 # ------------------------------------------------------------------------------
 # make one page
@@ -73,9 +73,9 @@ def make_page(beta):
     This functions execution time determines the overall "frames" per
     second ration.
     """
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page(width=pwidth, height=pheight)
-    mat = fitz.Matrix(beta * 0.01, 0, 1)
+    mat = pymupdf.Matrix(beta * 0.01, 0, 1)
     img = page.new_shape()
     img.draw_rect(r)
     img.finish(fill=gold, color=blue, width=0.3, morph=(tl, mat))

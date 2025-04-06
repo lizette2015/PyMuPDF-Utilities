@@ -1,5 +1,5 @@
 import os
-import fitz  # pymupdf
+import pymupdf  # pymupdf
 from azure.storage.blob import BlobClient
 
 blob = BlobClient.from_connection_string(
@@ -13,4 +13,4 @@ with open("some-file.pdf", "wb") as my_blob:
     blob_data.readinto(my_blob)
 
 # now open with PyMuPDF using the bytes object of "f"
-doc = fitz.open("pdf", my_blob.read())
+doc = pymupdf.open("pdf", my_blob.read())

@@ -15,9 +15,9 @@ PySimpleGUI, tkinter, optional: requires Python 3 if used
 """
 
 from __future__ import print_function
-import os, time, sys, fitz
+import os, time, sys, pymupdf
 
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 # do some adjustments whether Python v2 or v3
 if str is not bytes:
     import PySimpleGUI as psg
@@ -39,10 +39,10 @@ if not imgdir:
 
 t0 = mytime()  # set start timer
 
-doc = fitz.open()
+doc = pymupdf.open()
 
-width, height = fitz.paper_size("a4")
-rect = fitz.Rect(0, 0, width, height) + (36, 36, -36, -36)
+width, height = pymupdf.paper_size("a4")
+rect = pymupdf.Rect(0, 0, width, height) + (36, 36, -36, -36)
 imglist = os.listdir(imgdir)
 imgcount = len(imglist)
 

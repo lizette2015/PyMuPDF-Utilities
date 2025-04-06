@@ -10,14 +10,14 @@ The resulting output file will be named "input-rot0.pdf".
 """
 
 import sys
-import fitz
+import pymupdf
 
 try:
-    src = fitz.open(sys.argv[1])  # source file
+    src = pymupdf.open(sys.argv[1])  # source file
 except:
     print("Usage: 'python zerofy-rotation.py input.pdf'\n")
     raise
-doc = fitz.open()  # new output file
+doc = pymupdf.open()  # new output file
 
 for src_page in src:  # iterate over input pages
     src_rect = src_page.rect  # source page rect

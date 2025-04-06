@@ -1,7 +1,7 @@
 # written by Green
 
 import io
-import fitz
+import pymupdf
 import sys
 from pprint import pprint
 
@@ -23,8 +23,8 @@ class Block:
         self.advance = True
 
     def make_story(self):
-        if not isinstance(self.story, fitz.Story):
-            self.story = fitz.Story(self.html, user_css=self.css, archive=self.archive)
+        if not isinstance(self.story, pymupdf.Story):
+            self.story = pymupdf.Story(self.html, user_css=self.css, archive=self.archive)
 
 
 class ImageBlock:
@@ -48,7 +48,7 @@ class ImageBlock:
         else:
             self.html = f'<img src="{url}" width={width} height={height}/>'
 
-        self.archive = fitz.Archive(".") if archive is None else archive
+        self.archive = pymupdf.Archive(".") if archive is None else archive
         self.story = story
         self.report = report
         self.advance = True
@@ -57,8 +57,8 @@ class ImageBlock:
             self.css = self.report.css + self.css
 
     def make_story(self):
-        if not isinstance(self.story, fitz.Story):
-            self.story = fitz.Story(self.html, user_css=self.css, archive=self.archive)
+        if not isinstance(self.story, pymupdf.Story):
+            self.story = pymupdf.Story(self.html, user_css=self.css, archive=self.archive)
 
 
 class Options:
@@ -120,17 +120,17 @@ class Table:
         def recorder(pos):
             """small recorder function for determining the top row rectangle."""
             if pos.depth == 2:  # select column in template
-                self.HEADER_LAST_COL_RECT = fitz.Rect(pos.rect)
+                self.HEADER_LAST_COL_RECT = pymupdf.Rect(pos.rect)
 
             if pos.open_close != 2:  # only look at "close"
                 return
             if pos.id != pos.header:  # only look at 'id' of top row
                 return
-            self.HEADER_RECT = fitz.Rect(pos.rect)  # found:store header rect
+            self.HEADER_RECT = pymupdf.Rect(pos.rect)  # found:store header rect
 
         # write first occurrence of table to find header information
         fp = io.BytesIO()  # for memory PDF
-        writer = fitz.DocumentWriter(fp)
+        writer = pymupdf.DocumentWriter(fp)
         story.reset()
 
         dev = writer.begin_page(self.report.mediabox)
@@ -162,13 +162,13 @@ class Table:
         writer.close()
 
         # re-open temp PDF and load page 0
-        doc = fitz.open("pdf", fp)
+        doc = pymupdf.open("pdf", fp)
         page = doc[0]
         paths = [
             p for p in page.get_drawings() if p["rect"].intersects(self.HEADER_RECT)
         ]
         blocks = page.get_text(
-            "dict", clip=self.HEADER_RECT, flags=fitz.TEXTFLAGS_TEXT
+            "dict", clip=self.HEADER_RECT, flags=pymupdf.TEXTFLAGS_TEXT
         )["blocks"]
         if blocks:  # extract the font name for text in the header
             self.HEADER_FONT = page.get_fonts()[0][3]
@@ -182,7 +182,7 @@ class Table:
         return
 
     def make_story(self):
-        story = fitz.Story(self.html, user_css=self.css, archive=self.archive)
+        story = pymupdf.Story(self.html, user_css=self.css, archive=self.archive)
         body = story.body
         table = body.find("table", None, None)
         if table == None:
@@ -223,7 +223,7 @@ class Table:
         if templ:
             templ.remove()
 
-        if not isinstance(self.story, fitz.Story):
+        if not isinstance(self.story, pymupdf.Story):
             self.story = story
 
         if self.top_row != None:
@@ -264,7 +264,7 @@ class Table:
         for block in self.HEADER_BLOCKS:
             for line in block["lines"]:
                 for span in line["spans"]:
-                    point = fitz.Point(span["origin"]) * mat
+                    point = pymupdf.Point(span["origin"]) * mat
                     page.insert_text(
                         point, span["text"], fontname=fontname, fontsize=span["size"]
                     )
@@ -301,7 +301,7 @@ class Report:
 
         self.sindex = 0
         self.cols = columns
-        self.archive = fitz.Archive(".") if archive is None else archive
+        self.archive = pymupdf.Archive(".") if archive is None else archive
         self.header_rect = None
         self.footer_rect = None
         self.default_option = Options(cols=1, format=mediabox, newpage=True)
@@ -312,27 +312,27 @@ class Report:
 
         if isinstance(logo, str):
             self.logo_file = logo
-            self.logo_rect = fitz.Rect(
+            self.logo_rect = pymupdf.Rect(
                 self.where.tl, self.where.x0 + 100, self.where.y0 + 100
             )
         else:
             self.logo_file = None
 
         if font_families:
-            for family, fitz_code in font_families.items():
+            for family, pymupdf_code in font_families.items():
                 temp = [
                     k
-                    for k in fitz.fitz_fontdescriptors.keys()
-                    if k.startswith(fitz_code)
+                    for k in pymupdf.pymupdf_fontdescriptors.keys()
+                    if k.startswith(pymupdf_code)
                 ]
                 if temp == []:
                     print(
-                        f"'{fitz_code}' not in pymupdf-fonts - ignored",
+                        f"'{pymupdf_code}' not in pymupdf-fonts - ignored",
                         file=sys.stderr,
                     )
                     continue
-                self.css = fitz.css_for_pymupdf_font(
-                    fitz_code, CSS=self.css, archive=self.archive, name=family
+                self.css = pymupdf.css_for_pymupdf_font(
+                    pymupdf_code, CSS=self.css, archive=self.archive, name=family
                 )
 
     def set_margin(self, rect):  # set margin with rect provided
@@ -364,7 +364,7 @@ class Report:
                 len(self.sections[self.sindex]) != 2
                 or self.sections[self.sindex][1].format is None
             ):  # don't have property
-                return fitz.Rect(
+                return pymupdf.Rect(
                     0.0,
                     0.0,
                     self.default_option.format.width,
@@ -372,12 +372,12 @@ class Report:
                 )
 
             if isinstance(self.sections[self.sindex][1].format, str):
-                return fitz.paper_rect(self.sections[self.sindex][1].format)
+                return pymupdf.paper_rect(self.sections[self.sindex][1].format)
 
             if isinstance(
-                self.sections[self.sindex][1].format, fitz.Rect
+                self.sections[self.sindex][1].format, pymupdf.Rect
             ) or isinstance(self.sections[self.sindex][1].format, Size):
-                return fitz.Rect(
+                return pymupdf.Rect(
                     0.0,
                     0.0,
                     self.sections[self.sindex][1].format.width,
@@ -385,7 +385,7 @@ class Report:
                 )
 
         else:
-            return fitz.paper_rect(self.default_option.format)
+            return pymupdf.paper_rect(self.default_option.format)
 
     def get_current_section(
         self, index=None
@@ -403,7 +403,7 @@ class Report:
 
     def cal_cells(self, rect, columns):  # calculate cell areas
         rows = 1  # default
-        TABLE = fitz.make_table(rect, cols=columns, rows=rows)  # layouts
+        TABLE = pymupdf.make_table(rect, cols=columns, rows=rows)  # layouts
         CELLS = [TABLE[i][j] for i in range(rows) for j in range(columns)]
         return CELLS
 
@@ -432,7 +432,7 @@ class Report:
         self.mediabox = self.get_pagerect()  # init
 
         fileobject = io.BytesIO()  # let DocumentWriter write to memory
-        writer = fitz.DocumentWriter(fileobject)  # define output writer
+        writer = pymupdf.DocumentWriter(fileobject)  # define output writer
 
         if len(self.header):
             for hElement in self.header:
@@ -560,7 +560,7 @@ class Report:
                         else:
                             cell_index += 1
 
-                    if not isinstance(self.current_story().story, fitz.Story):
+                    if not isinstance(self.current_story().story, pymupdf.Story):
                         self.current_story().make_story()
 
                 else:  # check and select next column
@@ -589,7 +589,7 @@ class Report:
             pno += 1
         writer.close()
 
-        doc = fitz.open("pdf", fileobject)
+        doc = pymupdf.open("pdf", fileobject)
         page_count = doc.page_count  # page count
         font_dict = dict()
 
@@ -600,13 +600,13 @@ class Report:
                 xref, _, _, fontname, refname, _ = item
                 font_dict[fontname] = (xref, refname, page.number)
 
-            btm_rect = fitz.Rect(
+            btm_rect = pymupdf.Rect(
                 self.where.x0, page.rect.y1 - 30, page.rect.x1, page.rect.y1
             )
             page.insert_textbox(  # draw page number
                 btm_rect,
                 "Page {0} of {1}".format(page.number + 1, page_count),
-                align=fitz.TEXT_ALIGN_CENTER,
+                align=pymupdf.TEXT_ALIGN_CENTER,
             )
 
         for i in range(0, len(self.sections)):
@@ -636,7 +636,7 @@ class Report:
                     )  # get bottom
                     self.current_story().repeat_header(
                         page,
-                        fitz.Rect(header["left"], header["top"], x1, y1),
+                        pymupdf.Rect(header["left"], header["top"], x1, y1),
                         font_dict,
                     )
 

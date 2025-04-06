@@ -1,8 +1,8 @@
-import fitz
+import pymupdf
 import boto3
 
 # process some PDF document
-doc = fitz.open("...")
+doc = pymupdf.open("...")
 # then write / upload it directly to AWS S3
 # Instead of save, we use the tobytes(), which generates a bytes object
 pdfbytes = doc.tobytes(  # optional 'save' parameters:

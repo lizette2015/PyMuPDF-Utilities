@@ -28,9 +28,9 @@ from __future__ import print_function
 import os
 import sys
 
-import fitz
+import pymupdf
 
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 
 highlight = "this text is highlighted"
 underline = "this text is underlined"
@@ -41,13 +41,13 @@ blue = (0, 0, 1)
 gold = (1, 1, 0)
 green = (0, 1, 0)
 
-displ = fitz.Rect(0, 50, 0, 50)
-r = fitz.Rect(72, 72, 220, 100)
+displ = pymupdf.Rect(0, 50, 0, 50)
+r = pymupdf.Rect(72, 72, 220, 100)
 t1 = u"têxt üsès Lätiñ charß,\nEUR: €, mu: µ, super scripts: ²³!"
 
-font = fitz.Font("helv")  # used by the TextWriter class
+font = pymupdf.Font("helv")  # used by the TextWriter class
 
-doc = fitz.open()
+doc = pymupdf.open()
 page = doc.new_page()
 
 page.set_rotation(0)
@@ -61,7 +61,7 @@ def print_descr(annot):
     """Print a short description to the right of the annot rect."""
     rect = annot.rect
     page = annot.parent
-    writer = fitz.TextWriter(page_rect, color=red)
+    writer = pymupdf.TextWriter(page_rect, color=red)
     writer.append(rect.br + (10, -5), "%s annotation" % annot.type[1], font=font)
     writer.write_text(page)
 
@@ -77,7 +77,7 @@ annot = page.add_freetext_annot(
     rotate=90,
     text_color=blue,
     fill_color=gold,
-    align=fitz.TEXT_ALIGN_CENTER,
+    align=pymupdf.TEXT_ALIGN_CENTER,
 )
 annot.set_border(width=0.3, dashes=[2])
 annot.update(text_color=blue, fill_color=gold)
@@ -92,9 +92,9 @@ print_descr(annot)
 # a (unique) text and tilt it a bit. Then calculate the quad of the text
 # and feed it into annot creation.
 pos = annot.rect.tl + displ.tl
-mat = fitz.Matrix(-15)
+mat = pymupdf.Matrix(-15)
 
-writer = fitz.TextWriter(page_rect)  # create TextWriter object
+writer = pymupdf.TextWriter(page_rect)  # create TextWriter object
 writer.append(pos, highlight, font=font)  # append text
 writer.write_text(page, morph=(pos, mat))  # write to the page with rotation
 writer.text_rect.x0 = pos.x  # use actual text start / end
@@ -102,7 +102,7 @@ writer.text_rect.x1 = writer.last_point.x
 quad_highlight = writer.text_rect.morph(pos, ~mat)  # calculate text quad
 pos = quad_highlight.rect.bl  # the next writing position
 
-writer = fitz.TextWriter(page_rect)
+writer = pymupdf.TextWriter(page_rect)
 writer.append(pos, underline, font=font)
 writer.write_text(page, morph=(pos, mat))
 writer.text_rect.x0 = pos.x
@@ -110,7 +110,7 @@ writer.text_rect.x1 = writer.last_point.x
 quad_underline = writer.text_rect.morph(pos, ~mat)
 pos = quad_underline.rect.bl
 
-writer = fitz.TextWriter(page_rect)
+writer = pymupdf.TextWriter(page_rect)
 writer.append(pos, strikeout, font=font)
 writer.write_text(page, morph=(pos, mat))
 writer.text_rect.x0 = pos.x
@@ -118,7 +118,7 @@ writer.text_rect.x1 = writer.last_point.x
 quad_strikeout = writer.text_rect.morph(pos, ~mat)
 pos = quad_strikeout.rect.bl
 
-writer = fitz.TextWriter(page_rect)
+writer = pymupdf.TextWriter(page_rect)
 writer.append(pos, squiggled, font=font)
 writer.write_text(page, morph=(pos, mat))
 writer.text_rect.x0 = pos.x
@@ -140,12 +140,12 @@ annot = page.add_squiggly_annot(quad_squiggled)
 print_descr(annot)
 
 # calculate rect for the next annot
-r = fitz.Rect(pos, pos.x + 75, pos.y + 35) + (0, 20, 0, 20)
+r = pymupdf.Rect(pos, pos.x + 75, pos.y + 35) + (0, 20, 0, 20)
 
 annot = page.add_polyline_annot([r.bl, r.tr, r.br, r.tl])  # 'Polyline'
 annot.set_border(width=0.3, dashes=[2])
 annot.set_colors(stroke=blue, fill=green)
-annot.set_line_ends(fitz.PDF_ANNOT_LE_CLOSED_ARROW, fitz.PDF_ANNOT_LE_R_CLOSED_ARROW)
+annot.set_line_ends(pymupdf.PDF_ANNOT_LE_CLOSED_ARROW, pymupdf.PDF_ANNOT_LE_R_CLOSED_ARROW)
 annot.update(fill_color=(1, 1, 0))
 print_descr(annot)
 r += displ
@@ -153,7 +153,7 @@ r += displ
 annot = page.add_polygon_annot([r.bl, r.tr, r.br, r.tl])  # 'Polygon'
 annot.set_border(width=0.3, dashes=[2])
 annot.set_colors(stroke=blue, fill=gold)
-annot.set_line_ends(fitz.PDF_ANNOT_LE_DIAMOND, fitz.PDF_ANNOT_LE_CIRCLE)
+annot.set_line_ends(pymupdf.PDF_ANNOT_LE_DIAMOND, pymupdf.PDF_ANNOT_LE_CIRCLE)
 annot.update()
 print_descr(annot)
 r += displ
@@ -161,7 +161,7 @@ r += displ
 annot = page.add_line_annot(r.tr, r.bl)  # 'Line'
 annot.set_border(width=0.3, dashes=[2])
 annot.set_colors(stroke=blue, fill=gold)
-annot.set_line_ends(fitz.PDF_ANNOT_LE_DIAMOND, fitz.PDF_ANNOT_LE_CIRCLE)
+annot.set_line_ends(pymupdf.PDF_ANNOT_LE_DIAMOND, pymupdf.PDF_ANNOT_LE_CIRCLE)
 annot.update()
 print_descr(annot)
 r += displ
@@ -192,13 +192,13 @@ annot.update()
 print_descr(annot)
 r += displ + (0, 0, 50, 15)
 
-writer = fitz.TextWriter(page_rect, color=blue)
+writer = pymupdf.TextWriter(page_rect, color=blue)
 writer.fill_textbox(
     r,
     "This content will be removed upon applying the redaction.",
     font=font,
     fontsize=11,
-    align=fitz.TEXT_ALIGN_CENTER,
+    align=pymupdf.TEXT_ALIGN_CENTER,
 )
 writer.write_text(page)
 annot = page.add_redact_annot(r)

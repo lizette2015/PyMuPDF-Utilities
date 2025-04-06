@@ -22,13 +22,13 @@ Potentially CUDA for improved performance.
 # ------------------------------------------
 # Based on ideas by Github user @victor-ab
 # ------------------------------------------
-import fitz
+import pymupdf
 import easyocr
 import time
 
 easyocr_reader = easyocr.Reader(["en"])
 
-mat = fitz.Matrix(4, 4)  # high resolution matrix
+mat = pymupdf.Matrix(4, 4)  # high resolution matrix
 ocr_time = 0
 pix_time = 0
 
@@ -37,8 +37,8 @@ def get_easyocr(page, bbox):
     """Return OCR-ed span text using Tesseract.
 
     Args:
-        page: fitz.Page
-        bbox: fitz.Rect or its tuple
+        page: pymupdf.Page
+        bbox: pymupdf.Rect or its tuple
     Returns:
         The OCR-ed text of the bbox.
     """
@@ -46,7 +46,7 @@ def get_easyocr(page, bbox):
     # Step 1: Make a high-resolution image of the bbox.
     t0 = time.perf_counter()
     pix = page.get_pixmap(
-        colorspace=fitz.csGRAY,
+        colorspace=pymupdf.csGRAY,
         matrix=mat,
         clip=bbox,
     )
@@ -67,7 +67,7 @@ def get_easyocr(page, bbox):
         return "*** could not interpret ***"
 
 
-doc = fitz.open("v110-changes.pdf")
+doc = pymupdf.open("v110-changes.pdf")
 ocr_count = 0
 for page in doc:
     text_blocks = page.get_text("dict", flags=0)["blocks"]

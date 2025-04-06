@@ -42,7 +42,7 @@ Usage
   # for each page execute
   bboxes = column_boxes(page, footer_margin=50, no_image_text=True)
 
-  # bboxes is a list of fitz.IRect objects, that are sort ascending by their y0,
+  # bboxes is a list of pymupdf.IRect objects, that are sort ascending by their y0,
   # then x0 coordinates. Their text content can be extracted by all PyMuPDF
   # get_text() variants, like for instance the following:
   for rect in bboxes:
@@ -51,7 +51,7 @@ Usage
 """
 import os
 import sys
-import fitz
+import pymupdf
 
 
 def column_boxes(page, footer_margin=50, header_margin=50, no_image_text=True):
@@ -197,13 +197,13 @@ def column_boxes(page, footer_margin=50, header_margin=50, no_image_text=True):
     # blocks of text on page
     blocks = page.get_text(
         "dict",
-        flags=fitz.TEXTFLAGS_TEXT,
+        flags=pymupdf.TEXTFLAGS_TEXT,
         clip=clip,
     )["blocks"]
 
     # Make block rectangles, ignoring non-horizontal text
     for b in blocks:
-        bbox = fitz.IRect(b["bbox"])  # bbox of the block
+        bbox = pymupdf.IRect(b["bbox"])  # bbox of the block
 
         # ignore text written upon images
         if no_image_text and in_bbox(bbox, img_bboxes):
@@ -215,9 +215,9 @@ def column_boxes(page, footer_margin=50, header_margin=50, no_image_text=True):
             vert_bboxes.append(bbox)
             continue
 
-        srect = fitz.EMPTY_IRECT()
+        srect = pymupdf.EMPTY_IRECT()
         for line in b["lines"]:
-            lbbox = fitz.IRect(line["bbox"])
+            lbbox = pymupdf.IRect(line["bbox"])
             text = "".join([s["text"].strip() for s in line["spans"]])
             if len(text) > 1:
                 srect |= lbbox
@@ -309,7 +309,7 @@ if __name__ == "__main__":
         header_margin = 50
 
     # open document
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
 
     # iterate over the pages
     for page in doc:
@@ -327,10 +327,10 @@ if __name__ == "__main__":
             shape.draw_rect(rect)  # draw a border
 
             # write sequence number
-            shape.insert_text(rect.tl + (5, 15), str(i), color=fitz.pdfcolor["red"])
+            shape.insert_text(rect.tl + (5, 15), str(i), color=pymupdf.pdfcolor["red"])
 
         # finish drawing / text with color red
-        shape.finish(color=fitz.pdfcolor["red"])
+        shape.finish(color=pymupdf.pdfcolor["red"])
         shape.commit()  # store to the page
 
     # save document with text bboxes

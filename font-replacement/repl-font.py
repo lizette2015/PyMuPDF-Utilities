@@ -102,7 +102,7 @@ import time
 import json
 from pprint import pprint
 
-import fitz
+import pymupdf
 
 timer = time.perf_counter
 times = []
@@ -168,7 +168,7 @@ def get_font(searchname, flags):
         here. I.e. for each item in 'page.get_fonts()' it must be clear what
         should happen.
         Even if an original font should not be replaced, it still must be
-        converted to a fitz.Font and as such be returned here.
+        converted to a pymupdf.Font and as such be returned here.
         Non embedded fonts however must always be replaced!
     Args:
         fontname: (str) the original fontname for some text.
@@ -194,12 +194,12 @@ def resize(span, font):
 
     Args:
         span: (dict) the text span
-        font: (fitz.Font) the new font
+        font: (pymupdf.Font) the new font
     Returns:
         New fontsize (float). May be smaller than the original.
     """
     text = span["text"]  # the text to output
-    rect = fitz.Rect(span["bbox"])  # the bbox it occupies
+    rect = pymupdf.Rect(span["bbox"])  # the bbox it occupies
     fsize = span["size"]  # old fontsize
     # compute text length under new font with that size
     tl = font.text_length(text, fontsize=fsize)
@@ -328,7 +328,7 @@ def build_repl_table(doc, fname):
             continue
         if "." in newfont or "/" in newfont or "\\" in newfont:
             try:
-                font = fitz.Font(fontfile=newfont)
+                font = pymupdf.Font(fontfile=newfont)
             except:
                 sys.exit("Could not create font '%s'." % newfont)
             fontbuffer = font.buffer
@@ -341,7 +341,7 @@ def build_repl_table(doc, fname):
             continue
 
         try:
-            font = fitz.Font(newfont)
+            font = pymupdf.Font(newfont)
         except:
             sys.exit("Could not create font '%s'." % newfont)
         fontbuffer = font.buffer
@@ -357,17 +357,17 @@ def build_repl_table(doc, fname):
 def tilted_span(page, wdir, span, font):
     """Output a non-horizontal text span."""
     cos, sin = wdir  # writing direction from the line
-    matrix = fitz.Matrix(cos, -sin, sin, cos, 0, 0)  # corresp. matrix
+    matrix = pymupdf.Matrix(cos, -sin, sin, cos, 0, 0)  # corresp. matrix
     text = span["text"]  # text to write
-    bbox = fitz.Rect(span["bbox"])
+    bbox = pymupdf.Rect(span["bbox"])
     fontsize = span["size"]  # adjust fontsize
     tl = font.text_length(text, fontsize)  # text length with new font
     m = max(bbox.width, bbox.height)  # must not exceed max bbox dimension
     if tl > m:
         fontsize *= m / tl  # otherwise adjust
     opa = 0.1 if fontsize > 100 else 1  # fake opacity for large fontsizes
-    tw = fitz.TextWriter(page.rect, opacity=opa, color=fitz.sRGB_to_pdf(span["color"]))
-    origin = fitz.Point(span["origin"])
+    tw = pymupdf.TextWriter(page.rect, opacity=opa, color=pymupdf.sRGB_to_pdf(span["color"]))
+    origin = pymupdf.Point(span["origin"])
     if sin > 0:  # clockwise rotation
         origin.y = bbox.y0
     tw.append(origin, text, font=font, fontsize=fontsize)
@@ -398,7 +398,7 @@ def get_page_fontrefs(page):
 # main
 # ------------------
 infilename = sys.argv[1]
-indoc = fitz.open(infilename)  # input PDF
+indoc = pymupdf.open(infilename)  # input PDF
 
 repl_filename = infilename + "-fontnames.json"
 if os.path.exists(repl_filename):
@@ -413,7 +413,7 @@ print(
 
 times.append(("", timer()))
 # the following flag prevents images from being extracted:
-extr_flags = fitz.TEXT_PRESERVE_LIGATURES | fitz.TEXT_PRESERVE_WHITESPACE
+extr_flags = pymupdf.TEXT_PRESERVE_LIGATURES | pymupdf.TEXT_PRESERVE_WHITESPACE
 
 # Phase 1
 print("Phase 1: Analyze use of fonts.")
@@ -471,7 +471,7 @@ for page in indoc:
                 if new_fontname is None:  # do not replace this font
                     continue
 
-                font = fitz.Font(fontbuffer=font_buffers[new_fontname])
+                font = pymupdf.Font(fontbuffer=font_buffers[new_fontname])
                 text = span["text"].replace(chr(0xFFFD), chr(0xB6))
                 # guard against non-utf8 characters
                 textb = text.encode("utf8", errors="backslashreplace")
@@ -484,7 +484,7 @@ for page in indoc:
                 if color in textwriters.keys():  # already have a textwriter?
                     tw = textwriters[color]  # re-use it
                 else:  # make new
-                    tw = fitz.TextWriter(page.rect)  # make text writer
+                    tw = pymupdf.TextWriter(page.rect)  # make text writer
                     textwriters[color] = tw  # store it for later use
                 try:
                     tw.append(
@@ -499,7 +499,7 @@ for page in indoc:
     # now write all text stored in the list of text writers
     for color in textwriters.keys():  # output the stored text per color
         tw = textwriters[color]
-        outcolor = fitz.sRGB_to_pdf(color)  # recover (r,g,b)
+        outcolor = pymupdf.sRGB_to_pdf(color)  # recover (r,g,b)
         tw.write_text(page, color=outcolor)
 
     clean_fontnames(page)

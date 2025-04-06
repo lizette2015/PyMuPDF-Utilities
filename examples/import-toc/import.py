@@ -38,7 +38,7 @@ PyMuPDF
 """
 
 import csv
-import fitz
+import pymupdf
 import argparse
 
 parser = argparse.ArgumentParser(
@@ -53,7 +53,7 @@ args = parser.parse_args()
 assert args.csv, "missing CSV filename"
 assert args.pdf, "missing PDF filename"
 
-doc = fitz.open(args.pdf)
+doc = pymupdf.open(args.pdf)
 toc = []
 with open(args.csv) as tocfile:
     tocreader = csv.reader(tocfile, delimiter=args.d)

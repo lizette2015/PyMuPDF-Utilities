@@ -11,9 +11,9 @@ There also is no logic that maintains natural reading order, so text will
 appear as stored in the document.
 
 """
-import fitz
+import pymupdf
 
-doc = fitz.open("search.pdf")  # any supported document type
+doc = pymupdf.open("search.pdf")  # any supported document type
 page = doc[0]  # we want text from this page
 
 """

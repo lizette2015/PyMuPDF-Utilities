@@ -7,7 +7,7 @@ def resolve_names(doc):
     or None).
 
     Args:
-        doc: (fitz.Document) a PDF document.
+        doc: (pymupdf.Document) a PDF document.
 
     Returns:
         A dictionary of the form

@@ -57,11 +57,11 @@ import os
 import sys
 import time
 
-import fitz
+import pymupdf
 import PySimpleGUI as sg  # show a pogress  meter with this
 
-print(fitz.__doc__)
-if not tuple(map(int, fitz.version[0].split("."))) >= (1, 18, 18):
+print(pymupdf.__doc__)
+if not tuple(map(int, pymupdf.version[0].split("."))) >= (1, 18, 18):
     raise SystemExit("require PyMuPDF v1.18.18+")
 
 dimlimit = 100  # each image side must be greater than this
@@ -78,9 +78,9 @@ def recoverpix(doc, x, imgdict):
     s = imgdict["smask"]  # xref of its image mask
 
     try:
-        pix0 = fitz.Pixmap(imgdict["image"])
-        mask = fitz.Pixmap(doc.extract_image(s)["image"])
-        pix = fitz.Pixmap(pix0, mask)
+        pix0 = pymupdf.Pixmap(imgdict["image"])
+        mask = pymupdf.Pixmap(doc.extract_image(s)["image"])
+        pix = pymupdf.Pixmap(pix0, mask)
         if pix0.n > 3:
             ext = "pam"
         else:
@@ -101,7 +101,7 @@ if not fname:
     raise SystemExit()
 
 fpref = "img"
-doc = fitz.open(fname)
+doc = pymupdf.open(fname)
 img_ocnt = 0
 img_icnt = 0
 lenXREF = doc.xref_length()  # PDF object count - do not use entry 0!

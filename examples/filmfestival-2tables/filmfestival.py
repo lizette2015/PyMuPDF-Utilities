@@ -1,7 +1,7 @@
 import sqlite3
 
-import fitz
-from fitz.reports import Report, Block, Table
+import pymupdf
+from pymupdf.reports import Report, Block, Table
 
 # -----------------------------------------------------------------------------
 # HTML sources
@@ -52,7 +52,7 @@ td {padding-left: 3px;padding-right: 3px;}
 </table>
 """
 
-mediabox = fitz.paper_rect("a4")
+mediabox = pymupdf.paper_rect("a4")
 report = Report(mediabox, font_families={"sans-serif": "ubuntu", "serif": "ubuntu"})
 header = Block(html=HEADER, report=report)
 

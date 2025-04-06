@@ -22,9 +22,9 @@ Draw lines p0 to p2, p1 to p3, p2 to p4, ..., p[n-1] to p1.
 Just change the 'curve' value to create a different curve.
 """
 
-import fitz
+import pymupdf
 
-doc = fitz.open()
+doc = pymupdf.open()
 page = doc.new_page(width=500, height=500)
 center = (page.rect.tl + page.rect.br) / 2.0  # center of the page
 radius = 200  # we will draw a circle with this radius
@@ -35,9 +35,9 @@ p0 = center - (radius, 0)  # leftmost point of circle perimeter
 theta = -360 / n  # the angle corresponding to number of points
 
 # define the colors we will use
-stroke = fitz.pdfcolor["red"]  # color of the lines
-fill = fitz.pdfcolor["wheat"]  # fill color of circle
-border = fitz.pdfcolor["black"]  # border color of circle
+stroke = pymupdf.pdfcolor["red"]  # color of the lines
+fill = pymupdf.pdfcolor["wheat"]  # fill color of circle
+border = pymupdf.pdfcolor["black"]  # border color of circle
 
 shape = page.new_shape()  # make a drawing canvas for the page
 

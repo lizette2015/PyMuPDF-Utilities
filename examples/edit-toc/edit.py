@@ -59,7 +59,7 @@ import sys
 import time
 import traceback
 
-import fitz
+import pymupdf
 import wx
 import wx.grid as gridlib
 import wx.lib.gridmovers as gridmovers
@@ -106,7 +106,7 @@ khaki = wx.Colour(240, 230, 140)  # our background color
 # ==============================================================================
 class ScratchPad:
     def __init__(self):
-        self.doc = None  # fitz.Document
+        self.doc = None  # pymupdf.Document
         self.meta = {}  # PDF meta information
         self.seiten = 0  # max pages
         self.inhalt = []  # table of contents storage
@@ -921,7 +921,7 @@ def DisableOK():
 # Read PDF document information
 # ==============================================================================
 def getPDFinfo():
-    spad.doc = fitz.open(spad.file)
+    spad.doc = pymupdf.open(spad.file)
     if spad.doc.needs_pass:
         decrypt_doc()
         if spad.doc.is_encrypted:
@@ -1066,7 +1066,7 @@ def make_pdf(dlg):
 #
 # ==============================================================================
 assert wx.version() >= "3.0.2", "need at least wxPython v3.0.2"
-assert tuple(map(int, fitz.VersionBind.split("."))) >= (
+assert tuple(map(int, pymupdf.VersionBind.split("."))) >= (
     1,
     9,
     2,

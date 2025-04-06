@@ -16,12 +16,12 @@ PyMuPDF v1.17.5, wxPython Phoenix version
 import os
 import sys
 
-import fitz
+import pymupdf
 import wx
 
 print("Python:", sys.version)
 print("wxPython:", wx.version())
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 try:
     from PageFormat import FindFit
 except ImportError:
@@ -42,7 +42,7 @@ app = wx.App()
 
 if wx.VERSION[:3] < (3, 0, 3):
     raise AssertionError("need wxPython Phoenix version")
-if fitz.VersionBind.split(".") < ["1", "17", "5"]:
+if pymupdf.VersionBind.split(".") < ["1", "17", "5"]:
     raise AssertionError("need PyMuPDF 1.17.5 or later")
 
 # compute maximum PDF page display dimensions
@@ -112,9 +112,9 @@ def calc_matrix(fw, fh, tr, rotate=0):
     tmp = (tr.tl + tr.br) / 2.0
 
     # move image center to (0, 0), then rotate
-    m = fitz.Matrix(1, 0, 0, 1, -0.5, -0.5) * fitz.Matrix(rotate)
-    m *= fitz.Matrix(w, h)  # concat scale matrix
-    m *= fitz.Matrix(1, 0, 0, 1, tmp.x, tmp.y)  # concat move to target center
+    m = pymupdf.Matrix(1, 0, 0, 1, -0.5, -0.5) * pymupdf.Matrix(rotate)
+    m *= pymupdf.Matrix(w, h)  # concat scale matrix
+    m *= pymupdf.Matrix(1, 0, 0, 1, tmp.x, tmp.y)  # concat move to target center
     return m
 
 
@@ -207,7 +207,7 @@ def find_image(page, img):
     # This matrix must recreate the image rectangle. Only then we can be sure,
     # that future changes to this matrix will have valid results.
     # -------------------------------------------------------------------------
-    a, b, c, d, _, _ = mat = fitz.Matrix(mat_factors)
+    a, b, c, d, _, _ = mat = pymupdf.Matrix(mat_factors)
     if b == c == 0:  # extract the rotation angle
         if max(a, d) < 0:
             deg = 180
@@ -281,7 +281,7 @@ class PDFdisplay(wx.Dialog):
         # ---------------------------------------------------------------------
         # open document when dialog gets created
         # ---------------------------------------------------------------------
-        self.doc = fitz.open(filename)  # create Document object
+        self.doc = pymupdf.open(filename)  # create Document object
         if self.doc.needs_pass:  # check password protection
             self.decrypt_doc()
         if self.doc.is_encrypted:  # quit if we cannot decrypt
@@ -324,7 +324,7 @@ class PDFdisplay(wx.Dialog):
         # ---------------------------------------------------------------------
         # define zooming matrix for displaying PDF page images
         # ---------------------------------------------------------------------
-        self.zoom = fitz.Matrix(zoom, zoom)
+        self.zoom = pymupdf.Matrix(zoom, zoom)
         self.shrink = ~self.zoom  # corresp. shrink matrix
         self.bitmap = self.pdf_show(1)
         self.PDFimage = wx.StaticBitmap(self, -1, self.bitmap, defPos, defSiz, style=0)
@@ -493,9 +493,9 @@ class PDFdisplay(wx.Dialog):
             wx.EXPAND,
         )
 
-        # display of fitz.Rect
+        # display of pymupdf.Rect
         szr30.Add(
-            wx.StaticText(self, -1, "[fitz.Rect]    x0:"),
+            wx.StaticText(self, -1, "[pymupdf.Rect]    x0:"),
             (8, 0),
             (1, 1),
             wx.ALIGN_RIGHT,
@@ -641,7 +641,7 @@ class PDFdisplay(wx.Dialog):
                     self.draw_rect(nr.x, nr.y, w, h, "RED")
                     self.img_rect = nr
                     self.img_bottom_rect = self.bottom_rect_from_rect(nr)
-                    self.refresh_fitz_labels(wx.Rect(nr.x, nr.y, w, h))
+                    self.refresh_pymupdf_labels(wx.Rect(nr.x, nr.y, w, h))
 
             evt.Skip()
             return
@@ -655,7 +655,7 @@ class PDFdisplay(wx.Dialog):
                 w = r.width  # shape does ...
                 h = r.height  # ... not change
                 nr = wx.Rect(x, y, w, h)  # new rectangle
-                self.refresh_fitz_labels(nr)  # update fitz.Rect display
+                self.refresh_pymupdf_labels(nr)  # update pymupdf.Rect display
                 self.bboxLeft.SetValue(x)  # new screen value
                 self.bboxTop.SetValue(y)  # new screen value
                 self.redraw_bitmap()
@@ -670,8 +670,8 @@ class PDFdisplay(wx.Dialog):
         br = wx.Rect(p.x - self.sense, p.y - self.sense, 2 * self.sense, 2 * self.sense)
         return br
 
-    def refresh_fitz_labels(self, wxrect):
-        """Update screen fitz.Rect with wx.Rect values."""
+    def refresh_pymupdf_labels(self, wxrect):
+        """Update screen pymupdf.Rect with wx.Rect values."""
         nfr = self.wxRect_to_Rect(wxrect)
         self.rectX0.Label = "%g" % nfr.x0
         self.rectY0.Label = "%g" % nfr.y0
@@ -731,7 +731,7 @@ class PDFdisplay(wx.Dialog):
             self.bboxWidth.Value,
             self.bboxHeight.Value,
         )
-        new_rect = self.wxRect_to_Rect(r)  # compute fitz.Rect
+        new_rect = self.wxRect_to_Rect(r)  # compute pymupdf.Rect
         rot = self.rotation  # rotation value
         key = self.imgName.Value  # image reference name
         self.last_image = list(self.page_images.keys()).index(key)
@@ -789,7 +789,7 @@ class PDFdisplay(wx.Dialog):
         new_cmd += b"/%s Do\nQ\n" % key.encode()
         if not page.is_wrapped:
             page.wrap_contents()
-        fitz.TOOLS._insert_contents(page, new_cmd, 1)
+        pymupdf.TOOLS._insert_contents(page, new_cmd, 1)
         page.clean_contents()
         page = self.doc.reload_page(page)
         self.last_pno = -1
@@ -836,7 +836,7 @@ class PDFdisplay(wx.Dialog):
             self.bboxWidth.Value,
             self.bboxHeight.Value,
         )
-        self.refresh_fitz_labels(r)
+        self.refresh_pymupdf_labels(r)
         self.redraw_bitmap()
         self.draw_rect(r.x, r.y, r.width, r.height, "RED")
         self.btn_Update.Enable()
@@ -884,7 +884,7 @@ class PDFdisplay(wx.Dialog):
         page = self.doc[pno]
         w = min(page.rect.width / 2, 200)
         h = min(page.rect.height / 2, 200)
-        r = fitz.Rect(0, 0, w, h)
+        r = pymupdf.Rect(0, 0, w, h)
         try:
             page.insert_image(r, filename=path)
         except Exception as exc:
@@ -941,7 +941,7 @@ class PDFdisplay(wx.Dialog):
         self.bboxTop.SetValue(r.y)
         self.bboxHeight.SetValue(r.Height)
         self.bboxWidth.SetValue(r.Width)
-        self.refresh_fitz_labels(r)
+        self.refresh_pymupdf_labels(r)
         self.draw_rect(r.x, r.y, r.width, r.height, "RED")
         self.btn_Update.Enable()
         evt.Skip()
@@ -1074,14 +1074,14 @@ class PDFdisplay(wx.Dialog):
         return
 
     def Rect_to_wxRect(self, fr):
-        """Return a zoomed wx.Rect for given fitz.Rect."""
+        """Return a zoomed wx.Rect for given pymupdf.Rect."""
         r = (fr * self.zoom).irect  # zoomed IRect
         return wx.Rect(r.x0, r.y0, r.width, r.height)  # wx.Rect version
 
     def wxRect_to_Rect(self, wr):
-        """Return a shrunk fitz.Rect for given wx.Rect."""
-        r = fitz.Rect(wr.x, wr.y, wr.x + wr.width, wr.y + wr.height)
-        return r * self.shrink  # shrunk fitz.Rect version
+        """Return a shrunk pymupdf.Rect for given wx.Rect."""
+        r = pymupdf.Rect(wr.x, wr.y, wr.x + wr.width, wr.y + wr.height)
+        return r * self.shrink  # shrunk pymupdf.Rect version
 
     # -------------------------------------------------------------------------
     # Read and render a page
@@ -1119,7 +1119,7 @@ class PDFdisplay(wx.Dialog):
             zoom = MAX_HEIGHT / height
         else:
             zoom = MAX_WIDTH / width
-        self.zoom = fitz.Matrix(zoom, zoom)
+        self.zoom = pymupdf.Matrix(zoom, zoom)
         self.shrink = ~self.zoom
         pix = page.get_pixmap(matrix=self.zoom, alpha=False)
         bmp = wx.Bitmap.FromBuffer(pix.w, pix.h, pix.samples)

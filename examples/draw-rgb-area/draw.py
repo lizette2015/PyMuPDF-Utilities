@@ -1,5 +1,5 @@
 """
-Draw an RGB pixel area with numpy and save it with fitz
+Draw an RGB pixel area with numpy and save it with pymupdf
 --------------------------------------------------------------------------------
 License: GNU GPL V3
 (c) 2022 Jorj X. McKie
@@ -22,14 +22,14 @@ Pillow, numpy
 from __future__ import print_function
 import sys
 import time
-import fitz
+import pymupdf
 import numpy as np
 import PIL
 from PIL import Image
 
 print("Python:", sys.version)
 print("NumPy version", np.__version__)
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 print("PIL version", PIL.__version__)
 
 height = 2048
@@ -45,9 +45,9 @@ samples = image.tobytes()
 
 ttab = [(time.perf_counter(), "")]
 
-pix = fitz.Pixmap(fitz.csRGB, width, height, samples, 0)
-pix.save("output_fitz.png")
-ttab.append((time.perf_counter(), "fitz"))
+pix = pymupdf.Pixmap(pymupdf.csRGB, width, height, samples, 0)
+pix.save("output_pymupdf.png")
+ttab.append((time.perf_counter(), "pymupdf"))
 
 pix = Image.frombuffer("RGB", [width, height], samples, "raw", "RGB", 0, 1)
 pix.save("output_PIL.png")

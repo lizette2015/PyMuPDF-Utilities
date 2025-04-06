@@ -6,7 +6,7 @@ the "neighborhood" of each other. Please see below for a definition.
 This potentially results in a smaller set of rectangles, which each cover
 a vector graphics figure.
 
-The main function, "detect_rects", can be imported and invoked with a fitz.Page
+The main function, "detect_rects", can be imported and invoked with a pymupdf.Page
 as the only argument. Any document type is supported.
 It returns a list of joined rectangles - which for instance can be used as the
 "clip" parameter of a Pixmap.
@@ -21,7 +21,7 @@ License AGPL 3.0
 Copyright (c) 2021-2024, Jorj McKie
 """
 
-import fitz
+import pymupdf
 
 
 def detect_rects(page, graphics=None):
@@ -103,7 +103,7 @@ def detect_rects(page, graphics=None):
 if __name__ == "__main__":
     import sys
 
-    doc = fitz.open(sys.argv[1])
+    doc = pymupdf.open(sys.argv[1])
     for page in doc:
         new_rects = detect_rects(page)
         for i, r in enumerate(new_rects):

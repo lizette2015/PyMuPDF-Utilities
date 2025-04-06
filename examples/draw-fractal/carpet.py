@@ -32,11 +32,11 @@ The time required to save the resulting PNG image very much depends on image
 """
 
 from __future__ import print_function
-import fitz, time
+import pymupdf, time
 
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 
-if not list(map(int, fitz.VersionBind.split("."))) >= [1, 14, 8]:
+if not list(map(int, pymupdf.VersionBind.split("."))) >= [1, 14, 8]:
     raise SystemExit("need PyMuPDF v1.14.8 for this script")
 
 mytime = time.clock if str is bytes else time.perf_counter
@@ -47,14 +47,14 @@ d = 3**n  # edge length
 t0 = mytime()
 ir = (0, 0, d, d)  # the pixmap rectangle
 
-pm = fitz.Pixmap(fitz.csRGB, ir, False)
-fillcolor = fitz.utils.getColorInfoDict()["papayawhip"]
+pm = pymupdf.Pixmap(pymupdf.csRGB, ir, False)
+fillcolor = pymupdf.utils.getColorInfoDict()["papayawhip"]
 pm.set_rect(ir, fillcolor)  # fill it with some background color
 
 color = (0, 0, 255)  # color to fill the punch holes
 
 # define 'fill' pixmap for the punch holes
-fill = fitz.Pixmap(pm, 0)  # copy pm
+fill = pymupdf.Pixmap(pm, 0)  # copy pm
 fill.invert_irect(fill.irect)  # inverted colors of pm
 
 for lvl in range(0, n + 1):
@@ -71,7 +71,7 @@ for lvl in range(0, n + 1):
 t1 = mytime()
 pm.save("output_carpet.png")
 t2 = mytime()
-print("Sierpinski carpet fitz")
+print("Sierpinski carpet pymupdf")
 print("----------------------")
 print("%g sec filling the pixmap" % round(t1 - t0, 3))
 print("%g sec saving the picture" % round(t2 - t1, 3))

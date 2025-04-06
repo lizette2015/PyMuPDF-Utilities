@@ -9,13 +9,13 @@ PDF page of size ISO A4.
 The 4 source images are displayed such that only is shown at a time. This is
 achieved via so-called "Radio-Button-Groups" of optional content groups.
 """
-import fitz
+import pymupdf
 
 # source file with at least 4 pages
-src = fitz.open("source.pdf")
+src = pymupdf.open("source.pdf")
 
 # new PDF with one page
-doc = fitz.open()
+doc = pymupdf.open()
 page = doc.new_page()
 
 # define the 4 rectangle quadrants to receive the source pages

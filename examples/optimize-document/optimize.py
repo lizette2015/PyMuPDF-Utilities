@@ -20,7 +20,7 @@ FileOptimizer
 """
 
 from __future__ import print_function
-import fitz
+import pymupdf
 import sys, os, subprocess, tempfile, time
 
 assert len(sys.argv) == 2, "need filename parameter"
@@ -29,7 +29,7 @@ assert fn.lower().endswith(".pdf"), "must be a PDF file"
 
 fullname = os.path.abspath(fn)  # get the full path & name
 t0 = time.perf_counter()  # save current time
-doc = fitz.open(fullname)  # open PDF to save metadata
+doc = pymupdf.open(fullname)  # open PDF to save metadata
 meta = doc.metadata
 doc.close()
 
@@ -39,7 +39,7 @@ t2 = time.perf_counter()  # save current time again
 
 cdir = os.path.split(fullname)[0]  # split dir from filename
 fnout = tempfile.mkstemp(suffix=".pdf", dir=cdir)  # create temp pdf name
-doc = fitz.open(fullname)  # open now optimized PDF
+doc = pymupdf.open(fullname)  # open now optimized PDF
 doc.set_metadata(meta)  # restore old metadata
 doc.save(fnout[1], garbage=4)  # save temp PDF with it, a little sub opt
 doc.close()  # close it

@@ -21,7 +21,7 @@ Step 2: Analyze text spans to compute rectangles: one for each column, one
 Step 3: Output Python table as a pandas DataFrame (resp. Excel file).
 
 """
-import fitz
+import pymupdf
 import pandas as pd
 
 
@@ -29,12 +29,12 @@ def main(page, table_bbox):
     page.wrap_contents()
     spans = []
     # extract spans of page
-    for b in page.get_text("dict", clip=table_bbox, flags=fitz.TEXTFLAGS_TEXT)[
+    for b in page.get_text("dict", clip=table_bbox, flags=pymupdf.TEXTFLAGS_TEXT)[
         "blocks"
     ]:
         for l in b["lines"]:
             for s in l["spans"]:
-                spans.append((fitz.Rect(s["bbox"]), s["text"]))
+                spans.append((pymupdf.Rect(s["bbox"]), s["text"]))
 
     # sort spans in order top-left to bottom-right
     spans.sort(key=lambda s: (s[0].y1, s[0].x0))
@@ -94,7 +94,7 @@ def main(page, table_bbox):
 
     row_rects = []  # make a full width rectangle for each row.
     for i in range(len(row_y) - 1):
-        r = fitz.Rect(l_border, row_y[i], r_border, row_y[i + 1])
+        r = pymupdf.Rect(l_border, row_y[i], r_border, row_y[i + 1])
         row_rects.append(r)
 
     # store table text in the following cells
@@ -130,11 +130,11 @@ if __name__ == "__main__":
     import sys
 
     filename = sys.argv[1]
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
     # Locate table on page.
     # Assuming here, that we can access a JSON version.
     clip = json.loads(pathlib.Path(filename.replace(".pdf", "-bbox.json")).read_text())
-    clip = fitz.Rect(clip)
+    clip = pymupdf.Rect(clip)
     df = main(page, clip)
     df.to_excel(doc.name + ".xlsx")

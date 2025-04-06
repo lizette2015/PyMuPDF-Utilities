@@ -14,7 +14,7 @@ PyMuPDF
 """
 
 from __future__ import print_function
-import fitz
+import pymupdf
 import argparse
 
 parser = argparse.ArgumentParser(
@@ -35,7 +35,7 @@ if not args.desc:
     desc = args.file
 
 content = open(args.file, "rb").read()
-doc = fitz.open(args.pdf)
+doc = pymupdf.open(args.pdf)
 doc.embfile_add(name, content, args.file, desc)
 
 if not args.output:

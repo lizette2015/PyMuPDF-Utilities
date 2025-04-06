@@ -1,5 +1,5 @@
 import sys
-import fitz
+import pymupdf
 
 
 def page_rotation_set0(page):
@@ -13,17 +13,17 @@ def page_rotation_set0(page):
 
     if rot == 90:
         # before derotation, shift content horizontally
-        mat0 = fitz.Matrix(1, 0, 0, 1, mb.y1 - mb.x1 - mb.x0 - mb.y0, 0)
+        mat0 = pymupdf.Matrix(1, 0, 0, 1, mb.y1 - mb.x1 - mb.x0 - mb.y0, 0)
     elif rot == 270:
         # before derotation, shift content vertically
-        mat0 = fitz.Matrix(1, 0, 0, 1, 0, mb.x1 - mb.y1 - mb.y0 - mb.x0)
+        mat0 = pymupdf.Matrix(1, 0, 0, 1, 0, mb.x1 - mb.y1 - mb.y0 - mb.x0)
     else:
-        mat0 = fitz.Matrix(1, 0, 0, 1, -2 * mb.x0, -2 * mb.y0)
+        mat0 = pymupdf.Matrix(1, 0, 0, 1, -2 * mb.x0, -2 * mb.y0)
 
     # prefix with derotation matrix
     mat = mat0 * page.derotation_matrix
     cmd = b"%g %g %g %g %g %g cm " % tuple(mat)
-    xref = fitz.TOOLS._insert_contents(page, cmd, 0)
+    xref = pymupdf.TOOLS._insert_contents(page, cmd, 0)
 
     # swap x- and y-coordinates
     if rot in (90, 270):
@@ -49,7 +49,7 @@ if __name__ == "__main__":
         filename = sys.argv[1]
     except:
         sys.exit("Usage: python derotate.py input.pdf")
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     for pno in range(len(doc)):
         page_rotation_set0(doc[pno])
     doc.ez_save(filename.replace(".pdf", "-rot0.pdf"), clean=True)

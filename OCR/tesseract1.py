@@ -20,7 +20,7 @@ Dependencies:
 Tesseract must be installed and invocable via Python's 'subprocess' module.
 You also must install all the Tesseract language support you need to detect.
 """
-import fitz
+import pymupdf
 import subprocess
 import time
 
@@ -29,7 +29,7 @@ import time
 # Assume: text represents one line (--psm 7)
 # Note: Language mix spec increases duration by >40% - only use when needed!
 tess = "tesseract stdin stdout --psm 7 -l eng"
-mat = fitz.Matrix(4, 4)  # high resolution matrix
+mat = pymupdf.Matrix(4, 4)  # high resolution matrix
 ocr_time = 0
 pix_time = 0
 
@@ -38,8 +38,8 @@ def get_tessocr(page, bbox):
     """Return OCR-ed span text using Tesseract.
 
     Args:
-        page: fitz.Page
-        bbox: fitz.Rect or its tuple
+        page: pymupdf.Page
+        bbox: pymupdf.Rect or its tuple
     Returns:
         The OCR-ed text of the bbox.
     """
@@ -47,7 +47,7 @@ def get_tessocr(page, bbox):
     # Step 1: Make a high-resolution image of the bbox.
     t0 = time.perf_counter()
     pix = page.get_pixmap(
-        colorspace=fitz.csGRAY,  # we need no color
+        colorspace=pymupdf.csGRAY,  # we need no color
         matrix=mat,
         clip=bbox,
     )
@@ -71,7 +71,7 @@ def get_tessocr(page, bbox):
     return text
 
 
-doc = fitz.open("v110-changes.pdf")
+doc = pymupdf.open("v110-changes.pdf")
 ocr_count = 0
 for page in doc:
     blocks = page.get_text("dict", flags=0)["blocks"]

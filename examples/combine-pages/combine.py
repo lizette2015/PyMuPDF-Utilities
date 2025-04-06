@@ -28,20 +28,20 @@ PyMuPDF 1.12.1 or later
 """
 
 from __future__ import print_function
-import fitz, sys
+import pymupdf, sys
 
 infile = sys.argv[1]
-src = fitz.open(infile)
-doc = fitz.open()  # empty output PDF
+src = pymupdf.open(infile)
+doc = pymupdf.open()  # empty output PDF
 
-width, height = fitz.paper_size("a4")  # A4 portrait output page format
-r = fitz.Rect(0, 0, width, height)
+width, height = pymupdf.paper_size("a4")  # A4 portrait output page format
+r = pymupdf.Rect(0, 0, width, height)
 
 # define the 4 rectangles per page
 r1 = r * 0.5  # top left rect
 r2 = r1 + (r1.width, 0, r1.width, 0)  # top right
 r3 = r1 + (0, r1.height, 0, r1.height)  # bottom left
-r4 = fitz.Rect(r1.br, r.br)  # bottom right
+r4 = pymupdf.Rect(r1.br, r.br)  # bottom right
 
 # put them in a list
 r_tab = [r1, r2, r3, r4]

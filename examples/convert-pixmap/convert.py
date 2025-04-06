@@ -14,16 +14,16 @@ Pillow
 """
 
 import sys
-import fitz
+import pymupdf
 from PIL import Image
 
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 assert len(sys.argv) == 2, "Usage: %s <input file>" % sys.argv[0]
 
-pix = fitz.Pixmap(sys.argv[1])
+pix = pymupdf.Pixmap(sys.argv[1])
 rgb = "RGB"
 if pix.alpha:  # JPEG cannot have alpha!
-    pix0 = fitz.Pixmap(pix, 0)  # drop alpha channel
+    pix0 = pymupdf.Pixmap(pix, 0)  # drop alpha channel
     pix = pix0  # rename pixmap
 
 img = Image.frombuffer(rgb, [pix.width, pix.height], pix.samples, "raw", rgb, 0, 1)

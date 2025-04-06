@@ -1,10 +1,10 @@
 import os
 import time
 
-import fitz
+import pymupdf
 
-print(fitz.__doc__)
-doc = fitz.open()
+print(pymupdf.__doc__)
+doc = pymupdf.open()
 page = doc.new_page()
 
 annot1 = page.add_circle_annot((50, 50, 100, 100))

@@ -50,7 +50,7 @@ PyMuPDF v1.12.0, wxPython phoenix
 """
 
 from __future__ import print_function
-import fitz
+import pymupdf
 import wx
 import os
 from ParseTab import ParseTab
@@ -132,7 +132,7 @@ class PDFdisplay(wx.Dialog):
         # ======================================================================
         # open the document with MuPDF when dialog gets created
         # ======================================================================
-        self.doc = fitz.Document(filename)
+        self.doc = pymupdf.Document(filename)
         if self.doc.needs_pass:
             self.decrypt_doc()
         if self.doc.is_encrypted:

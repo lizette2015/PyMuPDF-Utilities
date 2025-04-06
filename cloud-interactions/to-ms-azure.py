@@ -1,8 +1,8 @@
-import fitz  # pymupdf
+import pymupdf  # pymupdf
 from azure.storage.blob import BlobClient
 
 # some PDF document
-doc = fitz.open("...")
+doc = pymupdf.open("...")
 
 # access Azure blob client
 blob = BlobClient.from_connection_string(

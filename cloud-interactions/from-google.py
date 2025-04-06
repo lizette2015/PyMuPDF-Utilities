@@ -1,5 +1,5 @@
 import os
-import fitz  # pymupdf
+import pymupdf  # pymupdf
 import gcsfs  # google cloud storage file system
 
 # Access the google filesystem.
@@ -11,4 +11,4 @@ ext = os.path.splitext(filename)[1]  # determine file extension
 f = fs.open(filename, "rb")  # open with that filesystem
 
 # now open with PyMuPDF using the bytes object of "f"
-doc = fitz.open(ext[1:], f.read())
+doc = pymupdf.open(ext[1:], f.read())

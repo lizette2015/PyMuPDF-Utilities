@@ -21,14 +21,14 @@ Dependencies
 
 import calendar
 import sys
-import fitz
+import pymupdf
 
-if not tuple(map(int, fitz.VersionBind.split("."))) >= (1, 17, 4):
+if not tuple(map(int, pymupdf.VersionBind.split("."))) >= (1, 17, 4):
     raise ValueError("Need PyMuPDF v.1.17.4 at least.")
-if "spacemo" not in fitz.fitz_fontdescriptors.keys():
+if "spacemo" not in pymupdf.pymupdf_fontdescriptors.keys():
     raise ValueError("Need pymupdf-fonts package")
 if len(sys.argv) != 2:
-    startyear = fitz.get_pdf_now()[2:6]  # take current year
+    startyear = pymupdf.get_pdf_now()[2:6]  # take current year
 else:
     startyear = sys.argv[1]
 
@@ -37,14 +37,14 @@ if len(startyear) != 4 or not startyear.isnumeric():
 
 startyear = int(startyear)
 
-doc = fitz.open()  # new empty PDF
-# font = fitz.Font("cour")  # use the built-in font Courier
-font = fitz.Font("spacemo")  # use Space Mono - a nicer mono-spaced font
+doc = pymupdf.open()  # new empty PDF
+# font = pymupdf.Font("cour")  # use the built-in font Courier
+font = pymupdf.Font("spacemo")  # use Space Mono - a nicer mono-spaced font
 cal = calendar.LocaleTextCalendar(locale="")  # use a locale setting
 # cal = calendar.TextCalendar()  # or stick with English
 
 
-page_rect = fitz.paper_rect("a4-l")  # A4 landscape paper
+page_rect = pymupdf.paper_rect("a4-l")  # A4 landscape paper
 w = page_rect.width
 h = page_rect.height
 print_rect = page_rect + (36, 72, -36, -36)  # fill this rectangle
@@ -57,7 +57,7 @@ fontsize = print_rect.width / (char_width * 100)
 
 def page_out(doc, text):
     page = doc.new_page(width=w, height=h)  # make new page
-    tw = fitz.TextWriter(page_rect)  # make text writer
+    tw = pymupdf.TextWriter(page_rect)  # make text writer
     tw.fill_textbox(print_rect, text, font=font, fontsize=fontsize)
     tw.write_text(page)  # write the text to the page
 

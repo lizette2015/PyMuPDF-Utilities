@@ -1,6 +1,6 @@
 import pathlib
 
-import fitz
+import pymupdf
 
 from Reports import *
 
@@ -36,7 +36,7 @@ td[id="population"], td[id="percent"], td[id="year"] {
 
 HEADER = '<h1 style="text-align: center;">Capital Cities of the World</h1>'
 
-mediabox = fitz.paper_rect("a3")  # page format
+mediabox = pymupdf.paper_rect("a3")  # page format
 report = Report(
     mediabox,
     # use pymupdf-fonts to replace both, Helvetica and Times-Roman:

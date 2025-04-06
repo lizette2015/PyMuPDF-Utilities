@@ -49,13 +49,13 @@ PyMuPDF, wxPython Phoenix version
 """
 
 from __future__ import print_function
-import fitz
+import pymupdf
 import wx
 import sys, os
 
 print("Python:", sys.version)
 print("wxPython:", wx.version())
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 try:
     from PageFormat import FindFit
 except ImportError:
@@ -74,7 +74,7 @@ except ImportError:
 app = None
 app = wx.App()
 assert wx.VERSION[0:3] >= (3, 0, 3), "need wxPython Phoenix version"
-assert tuple(map(int, fitz.VersionBind.split("."))) >= (
+assert tuple(map(int, pymupdf.VersionBind.split("."))) >= (
     1,
     10,
     0,
@@ -136,7 +136,7 @@ class PDFdisplay(wx.Dialog):
         # ======================================================================
         # open the document with MuPDF when dialog gets created
         # ======================================================================
-        self.doc = fitz.open(filename)  # create Document object
+        self.doc = pymupdf.open(filename)  # create Document object
         if self.doc.needs_pass:  # check password protection
             self.decrypt_doc()
         if self.doc.is_encrypted:  # quit if we cannot decrypt
@@ -188,7 +188,7 @@ class PDFdisplay(wx.Dialog):
         # define zooming matrix for displaying PDF page images
         # we increase images by 20%, so take 1.2 as scale factors
         # ======================================================================
-        self.zoom = fitz.Matrix(zoom, zoom)  # will use a constant zoom
+        self.zoom = pymupdf.Matrix(zoom, zoom)  # will use a constant zoom
         self.shrink = ~self.zoom  # corresp. shrink matrix
         self.bitmap = self.pdf_show(1)
         self.PDFimage = wx.StaticBitmap(self, -1, self.bitmap, defPos, defSiz, style=0)
@@ -487,7 +487,7 @@ class PDFdisplay(wx.Dialog):
                     and self.is_in_free_area(nr, ok=in_brect)
                 ):
                     l = self.page_links[in_brect]  # page link entry
-                    l["from"] = self.wxRect_to_Rect(nr)  # get fitz format
+                    l["from"] = self.wxRect_to_Rect(nr)  # get pymupdf format
                     l["update"] = True
                     self.page_links[in_brect] = l  # store change link
                     self.fromHeight.SetValue(h)
@@ -511,7 +511,7 @@ class PDFdisplay(wx.Dialog):
                     if self.is_in_free_area(nr, ok=in_rect):  # no overlaps?
                         self.fromLeft.SetValue(x)  # new screen value
                         self.fromTop.SetValue(y)  # new screen value
-                        fr = self.wxRect_to_Rect(nr)  # fitz format of new rect
+                        fr = self.wxRect_to_Rect(nr)  # pymupdf format of new rect
                         l = self.page_links[in_rect]  # this is the link
                         l["from"] = fr  # update its hot spot
                         l["update"] = True  # we need to update
@@ -568,7 +568,7 @@ class PDFdisplay(wx.Dialog):
             if l.get("update", False):  # "update" must be True
                 if l["xref"] == 0:  # no xref => new link
                     pg.insert_link(l)
-                elif l["kind"] == fitz.LINK_NONE:
+                elif l["kind"] == pymupdf.LINK_NONE:
                     pg.delete_link(l)  # delete invalid link
                 else:
                     pg.update_link(l)  # else update link
@@ -612,7 +612,7 @@ class PDFdisplay(wx.Dialog):
                 self.fromTop.SetValue(lr.y)
                 self.fromLeft.SetValue(lr.x)
 
-        new_to = lnk.get("to", fitz.Point(0, 0))
+        new_to = lnk.get("to", pymupdf.Point(0, 0))
         try:
             new_to.x = float(self.toLeft.Value)
         except:
@@ -674,7 +674,7 @@ class PDFdisplay(wx.Dialog):
         lnk["kind"] = lt
         self.enable_update()
 
-        if lt == fitz.LINK_GOTO:
+        if lt == pymupdf.LINK_GOTO:
             if not self.toPage.Value.isdecimal():
                 self.toPage.ChangeValue("1")
             self.toPage.Enable()
@@ -685,9 +685,9 @@ class PDFdisplay(wx.Dialog):
                 self.toHeight.ChangeValue("0")
             self.toHeight.Enable()
             lnk["page"] = int(self.toPage.Value) - 1
-            lnk["to"] = fitz.Point(int(self.toLeft.Value), int(self.toHeight.Value))
+            lnk["to"] = pymupdf.Point(int(self.toLeft.Value), int(self.toHeight.Value))
 
-        elif lt == fitz.LINK_GOTOR:
+        elif lt == pymupdf.LINK_GOTOR:
             if not self.toFile.Value:
                 self.toFile.SetValue(self.text_in_rect())
                 self.toFile.MarkDirty()
@@ -705,14 +705,14 @@ class PDFdisplay(wx.Dialog):
             lnk["page"] = -1
             lnk["to"] = ""
 
-        elif lt == fitz.LINK_URI:
+        elif lt == pymupdf.LINK_URI:
             if not self.toURI.Value:
                 self.toURI.SetValue(self.text_in_rect())
                 self.toURI.MarkDirty()
             lnk["uri"] = self.toURI.Value
             self.toURI.Enable()
 
-        elif lt == fitz.LINK_LAUNCH:
+        elif lt == pymupdf.LINK_LAUNCH:
             if not self.toFile.Value:
                 self.toFile.SetValue(self.text_in_rect())
                 self.toFile.MarkDirty()
@@ -783,7 +783,7 @@ class PDFdisplay(wx.Dialog):
                 self.fromHeight.Value,
             )
             l_from = self.wxRect_to_Rect(wxr)
-            l_to = fitz.Point(float(self.toLeft.Value), float(self.toHeight.Value))
+            l_to = pymupdf.Point(float(self.toLeft.Value), float(self.toHeight.Value))
             lnk = {
                 "kind": n,
                 "xref": 0,
@@ -867,7 +867,7 @@ class PDFdisplay(wx.Dialog):
         self.linkType.SetSelection(lidx)
 
         self.prep_link_details(lnk["kind"])
-        if lnk["kind"] in (fitz.LINK_GOTO, fitz.LINK_GOTOR):
+        if lnk["kind"] in (pymupdf.LINK_GOTO, pymupdf.LINK_GOTOR):
             if lnk["page"] >= 0:
                 self.toPage.ChangeValue(str(lnk["page"] + 1))
                 self.toLeft.ChangeValue(str(lnk["to"][0]))
@@ -877,20 +877,20 @@ class PDFdisplay(wx.Dialog):
                 self.toLeft.ChangeValue("")
                 self.toHeight.ChangeValue("")
                 self.toName.ChangeValue(lnk["to"])
-            if lnk["kind"] == fitz.LINK_GOTOR:
+            if lnk["kind"] == pymupdf.LINK_GOTOR:
                 self.toFile.ChangeValue(lnk["file"])
                 self.toFile.Enable()
             self.toPage.Enable()
             self.toLeft.Enable()
             self.toHeight.Enable()
-            if lnk["kind"] == fitz.LINK_GOTOR or self.pdf_vsn_ok:
+            if lnk["kind"] == pymupdf.LINK_GOTOR or self.pdf_vsn_ok:
                 self.toName.Enable()
 
-        elif lnk["kind"] == fitz.LINK_URI:
+        elif lnk["kind"] == pymupdf.LINK_URI:
             self.toURI.ChangeValue(lnk["uri"])
             self.toURI.Enable()
 
-        elif lnk["kind"] in (fitz.LINK_GOTOR, fitz.LINK_LAUNCH):
+        elif lnk["kind"] in (pymupdf.LINK_GOTOR, pymupdf.LINK_LAUNCH):
             self.toFile.ChangeValue(lnk["file"])
             self.toFile.Enable()
 
@@ -924,22 +924,22 @@ class PDFdisplay(wx.Dialog):
                 p.x - self.sense, p.y - self.sense, 2 * self.sense, 2 * self.sense
             )
             self.link_bottom_rects.append(br)
-            if lnk["kind"] == fitz.LINK_GOTO:
+            if lnk["kind"] == pymupdf.LINK_GOTO:
                 if lnk["page"] >= 0:
                     txt = "page " + str(lnk["page"] + 1)
                 else:
                     txt = "name " + str(lnk["to"])
-            elif lnk["kind"] == fitz.LINK_GOTOR:
+            elif lnk["kind"] == pymupdf.LINK_GOTOR:
                 txt = lnk["file"]
                 if lnk["page"] >= 0:
                     txt += " p. " + str(lnk["page"] + 1)
                 else:
                     txt += "(" + str(lnk["to"]) + ")"
-            elif lnk["kind"] == fitz.LINK_URI:
+            elif lnk["kind"] == pymupdf.LINK_URI:
                 txt = lnk["uri"]
-            elif lnk["kind"] == fitz.LINK_LAUNCH:
+            elif lnk["kind"] == pymupdf.LINK_LAUNCH:
                 txt = "open " + lnk["file"]
-            elif lnk["kind"] == fitz.LINK_NONE:
+            elif lnk["kind"] == pymupdf.LINK_NONE:
                 txt = "none"
             else:
                 txt = "unkown destination"
@@ -990,11 +990,11 @@ class PDFdisplay(wx.Dialog):
         return
 
     def prep_link_details(self, lt):
-        if lt not in (fitz.LINK_GOTOR, fitz.LINK_LAUNCH):
+        if lt not in (pymupdf.LINK_GOTOR, pymupdf.LINK_LAUNCH):
             self.toFile.ChangeValue("")
             self.toFile.Disable()
 
-        if lt not in (fitz.LINK_GOTO, fitz.LINK_GOTOR):
+        if lt not in (pymupdf.LINK_GOTO, pymupdf.LINK_GOTOR):
             self.toPage.ChangeValue("")
             self.toHeight.ChangeValue("")
             self.toLeft.ChangeValue("")
@@ -1004,7 +1004,7 @@ class PDFdisplay(wx.Dialog):
             self.toPage.Disable()
             self.toName.Disable()
 
-        if lt != fitz.LINK_URI:
+        if lt != pymupdf.LINK_URI:
             self.toURI.ChangeValue("")
             self.toURI.Disable()
 
@@ -1020,19 +1020,19 @@ class PDFdisplay(wx.Dialog):
         r = self.wxRect_to_Rect(wxr)
         text = wx.EmptyString
         for b in self.text_blocks:
-            if fitz.Rect(b[:4]) in r:
+            if pymupdf.Rect(b[:4]) in r:
                 text += b[4]
         return text
 
     def Rect_to_wxRect(self, fr):
-        """Return a zoomed wx.Rect for given fitz.Rect."""
+        """Return a zoomed wx.Rect for given pymupdf.Rect."""
         r = (fr * self.zoom).irect  # zoomed IRect
         return wx.Rect(r.x0, r.y0, r.width, r.height)  # wx.Rect version
 
     def wxRect_to_Rect(self, wr):
-        """Return a shrunk fitz.Rect for given wx.Rect."""
-        r = fitz.Rect(wr.x, wr.y, wr.x + wr.width, wr.y + wr.height)
-        return r * self.shrink  # shrunk fitz.Rect version
+        """Return a shrunk pymupdf.Rect for given wx.Rect."""
+        r = pymupdf.Rect(wr.x, wr.y, wr.x + wr.width, wr.y + wr.height)
+        return r * self.shrink  # shrunk pymupdf.Rect version
 
     def is_in_free_area(self, nr, ok=-1):
         """Determine if rect covers a free area inside the bitmap."""

@@ -14,19 +14,19 @@ PyMuPDF, svglib
 """
 
 import sys
-import fitz
+import pymupdf
 from svglib.svglib import svg2rlg
 
 drawing = svg2rlg(sys.argv[2])
 pdfbytes = drawing.asString("pdf")
 
-src = fitz.open("pdf", pdfbytes)
+src = pymupdf.open("pdf", pdfbytes)
 
 rect = src[0].rect
 factor = 25 / rect.height
 rect *= factor
 
-doc = fitz.open(sys.argv[1])
+doc = pymupdf.open(sys.argv[1])
 for page in doc:
     xref = page.show_pdf_page(rect, src, 0, overlay=True)
 doc.save("output_svg.pdf", garbage=4)

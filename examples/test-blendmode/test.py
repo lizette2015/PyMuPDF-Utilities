@@ -25,46 +25,46 @@ PyMuPDF
 
 import os
 
-import fitz
+import pymupdf
 
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 
 blend_modes = (
-    fitz.PDF_BM_ColorBurn,
-    fitz.PDF_BM_ColorDodge,
-    fitz.PDF_BM_Darken,
-    fitz.PDF_BM_Difference,
-    fitz.PDF_BM_Exclusion,
-    fitz.PDF_BM_HardLight,
-    fitz.PDF_BM_Lighten,
-    fitz.PDF_BM_Multiply,
-    fitz.PDF_BM_Normal,
-    fitz.PDF_BM_Overlay,
-    fitz.PDF_BM_Screen,
-    fitz.PDF_BM_SoftLight,
-    fitz.PDF_BM_Hue,
-    fitz.PDF_BM_Saturation,
-    fitz.PDF_BM_Color,
-    fitz.PDF_BM_Luminosity,
+    pymupdf.PDF_BM_ColorBurn,
+    pymupdf.PDF_BM_ColorDodge,
+    pymupdf.PDF_BM_Darken,
+    pymupdf.PDF_BM_Difference,
+    pymupdf.PDF_BM_Exclusion,
+    pymupdf.PDF_BM_HardLight,
+    pymupdf.PDF_BM_Lighten,
+    pymupdf.PDF_BM_Multiply,
+    pymupdf.PDF_BM_Normal,
+    pymupdf.PDF_BM_Overlay,
+    pymupdf.PDF_BM_Screen,
+    pymupdf.PDF_BM_SoftLight,
+    pymupdf.PDF_BM_Hue,
+    pymupdf.PDF_BM_Saturation,
+    pymupdf.PDF_BM_Color,
+    pymupdf.PDF_BM_Luminosity,
 )
 
 
-doc = fitz.open()  # new PDF
+doc = pymupdf.open()  # new PDF
 page = doc.new_page()  # new page
 shape = page.new_shape()  # make a page draw area
 opacity = 0.3  # all annotation use this opacity
 tcol = (0, 0, 1)  # text color
 gold = (1, 1, 0)  # highlight color
 bg_color = "skyblue3"
-background = fitz.utils.getColor(bg_color)  # background color
+background = pymupdf.utils.getColor(bg_color)  # background color
 fname = "hebo"  # Helvetica Bold
 fsize = 12  # generous font size
 tl = page.rect.tl + (150, 100)
 br = page.rect.br - (150, 62)
-rect = fitz.Rect(tl, br)  # only use this area of the page
+rect = pymupdf.Rect(tl, br)  # only use this area of the page
 
 
-rects = fitz.make_table(  # define a table with 2 cells per blend mode
+rects = pymupdf.make_table(  # define a table with 2 cells per blend mode
     rows=len(blend_modes),  # one row per blend mode
     cols=2,  # for the blend mode and its highlighted version
     rect=rect,  # inside this rectangle
@@ -85,7 +85,7 @@ for i, bmode in enumerate(blend_modes):
         fontsize=fsize,
         color=tcol,
         fontname=fname,
-        align=fitz.TEXT_ALIGN_CENTER,
+        align=pymupdf.TEXT_ALIGN_CENTER,
     )
     shape.insert_textbox(  # blend mode name in right rectangle
         r[1],
@@ -93,7 +93,7 @@ for i, bmode in enumerate(blend_modes):
         fontsize=fsize,
         color=tcol,
         fontname=fname,
-        align=fitz.TEXT_ALIGN_CENTER,
+        align=pymupdf.TEXT_ALIGN_CENTER,
     )
 
 shape.insert_textbox(
@@ -103,7 +103,7 @@ shape.insert_textbox(
     fontname=fname,
     color=tcol,
     fontsize=fsize,
-    align=fitz.TEXT_ALIGN_CENTER,
+    align=pymupdf.TEXT_ALIGN_CENTER,
 )
 
 shape.commit()  # this commits text and drawings to the page

@@ -1,4 +1,4 @@
-import fitz
+import pymupdf
 import boto3
 
 s3 = boto3.client("s3")
@@ -9,4 +9,4 @@ mime = response["ContentType"]
 body = response["Body"]
 
 # define Document with these data
-doc = fitz.open(mime, body.read())
+doc = pymupdf.open(mime, body.read())

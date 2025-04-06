@@ -14,17 +14,17 @@ This script demonstrates some of MuPDF's non-PDF graphic capabilities.
 """
 
 import sys
-import fitz
+import pymupdf
 
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 assert len(sys.argv) == 2, "Usage: %s <input file>" % sys.argv[0]
 
-pix0 = fitz.Pixmap(sys.argv[1])
+pix0 = pymupdf.Pixmap(sys.argv[1])
 tar_cs = pix0.colorspace
 tar_width = pix0.width * 3
 tar_height = pix0.height * 4
-tar_irect = fitz.IRect(0, 0, tar_width, tar_height)
-tar_pix = fitz.Pixmap(tar_cs, tar_irect, pix0.alpha)
+tar_irect = pymupdf.IRect(0, 0, tar_width, tar_height)
+tar_pix = pymupdf.Pixmap(tar_cs, tar_irect, pix0.alpha)
 tar_pix.clear_with(90)
 
 for i in list(range(4)):

@@ -18,8 +18,8 @@ Logos/watermarks are transparent for all document types except for images. If a
 transparency is required then the file must be manually converted to PDF first
 as described next:
 
-    pix = fitz.Pixmap(logo_filename)
-    src = fitz.open()
+    pix = pymupdf.Pixmap(logo_filename)
+    src = pymupdf.open()
     src_page = src.new_page(-1, width = pix.width, height = pix.height)
     src_page.insert_image(src_page.rect, pixmap = pix)
 
@@ -29,20 +29,20 @@ PyMuPDF
 """
 
 import sys
-import fitz
+import pymupdf
 
-src = fitz.open(sys.argv[2])
+src = pymupdf.open(sys.argv[2])
 
 if not src.is_pdf:
     pdfbytes = src.convert_to_pdf()
     src.close()
-    src = fitz.open("pdf", pdfbytes)
+    src = pymupdf.open("pdf", pdfbytes)
 
 rect = src[0].rect
 factor = 25 / rect.height
 rect *= factor
 
-doc = fitz.open(sys.argv[1])
+doc = pymupdf.open(sys.argv[1])
 xref = 0
 for page in doc:
     xref = page.show_pdf_page(rect, src, 0, reuse_xref=xref, overlay=False)

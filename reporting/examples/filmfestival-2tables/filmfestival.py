@@ -1,6 +1,6 @@
 import sqlite3
 
-import fitz
+import pymupdf
 
 
 # until official release as part of PymuPDF use this import statement instead:
@@ -55,7 +55,7 @@ td {padding-left: 3px;padding-right: 3px;}
 </table>
 """
 
-mediabox = fitz.paper_rect("letter")
+mediabox = pymupdf.paper_rect("letter")
 report = Report(mediabox, font_families={"sans-serif": "ubuntu", "serif": "ubuntu"})
 header = Block(html=HEADER, report=report)
 

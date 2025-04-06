@@ -19,9 +19,9 @@ PySimpleGUI, tkinter, optional: requires Python 3 if used
 """
 
 from __future__ import print_function
-import os, time, sys, fitz
+import os, time, sys, pymupdf
 
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 
 # do some adjustments whether Python v2 or v3
 if str is not bytes:
@@ -44,7 +44,7 @@ if not imgdir:
 
 t0 = mytime()  # set start timer
 
-doc = fitz.open()  # PDF with the pictures
+doc = pymupdf.open()  # PDF with the pictures
 
 imglist = os.listdir(imgdir)  # list of them
 imgcount = len(imglist)  # pic count
@@ -67,11 +67,11 @@ for i, f in enumerate(imglist):
         print("inserting file '%s', (%i / %i)" % (f, i + 1, imgcount))
 
     try:
-        img = fitz.open(os.path.join(imgdir, f))  # open pic as document
+        img = pymupdf.open(os.path.join(imgdir, f))  # open pic as document
         rect = img[0].rect  # pic dimension
         pdfbytes = img.convert_to_pdf()  # make a PDF stream
         img.close()  # no longer needed
-        imgPDF = fitz.open("pdf", pdfbytes)  # open stream as PDF
+        imgPDF = pymupdf.open("pdf", pdfbytes)  # open stream as PDF
         page = doc.new_page(
             width=rect.width, height=rect.height  # new page with ...
         )  # pic dimension

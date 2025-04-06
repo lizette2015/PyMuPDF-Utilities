@@ -1,4 +1,4 @@
-import fitz_new as fitz
+import pymupdf_new as pymupdf
 
 
 def resolve_names(doc):
@@ -7,7 +7,7 @@ def resolve_names(doc):
     This function must be used with PyMuPDF's new, "rebased" architecture -
     see the above import statement.
 
-    The only parameter is the fitz.Document.
+    The only parameter is the pymupdf.Document.
     All names found in the catalog under keys "/Dests" and "/Names/Dests" are
     being included.
 
@@ -32,12 +32,12 @@ def resolve_names(doc):
 
     def obj_string(obj):
         """Return string version of an object that has no xref."""
-        buffer = fitz.mupdf.fz_new_buffer(512)
-        output = fitz.mupdf.ll_fz_new_output_with_buffer(buffer.m_internal)
-        fitz.mupdf.ll_pdf_print_obj(output, obj.m_internal, 1, 0)
-        printed = fitz.JM_UnicodeFromBuffer(buffer)
-        fitz.mupdf.ll_fz_drop_output(output)
-        fitz.mupdf.ll_fz_drop_buffer(buffer.m_internal)
+        buffer = pymupdf.mupdf.fz_new_buffer(512)
+        output = pymupdf.mupdf.ll_fz_new_output_with_buffer(buffer.m_internal)
+        pymupdf.mupdf.ll_pdf_print_obj(output, obj.m_internal, 1, 0)
+        printed = pymupdf.JM_UnicodeFromBuffer(buffer)
+        pymupdf.mupdf.ll_fz_drop_output(output)
+        pymupdf.mupdf.ll_fz_drop_buffer(buffer.m_internal)
         return printed
 
     def get_array(val):
@@ -93,12 +93,12 @@ def resolve_names(doc):
         This may be either "/Names/Dests" or just "/Dests"
         """
         # length of the PDF dictionary
-        name_count = fitz.mupdf.pdf_dict_len(pdf_dict)
+        name_count = pymupdf.mupdf.pdf_dict_len(pdf_dict)
 
         # extract key-val of each dict item
         for i in range(name_count):
-            key = fitz.mupdf.pdf_dict_get_key(pdf_dict, i)
-            val = fitz.mupdf.pdf_dict_get_val(pdf_dict, i)
+            key = pymupdf.mupdf.pdf_dict_get_key(pdf_dict, i)
+            val = pymupdf.mupdf.pdf_dict_get_val(pdf_dict, i)
             if key.pdf_is_name():  # this should always be true!
                 dict_key = key.pdf_to_name()
             else:
@@ -109,28 +109,28 @@ def resolve_names(doc):
                 dest_dict[dict_key] = get_array(val)  # store key/value in dict
 
     # access underlying PDF document of fz Document
-    pdf = fitz.mupdf.pdf_document_from_fz_document(doc)
+    pdf = pymupdf.mupdf.pdf_document_from_fz_document(doc)
 
     # access PDF trailer
-    trailer = fitz.mupdf.pdf_trailer(pdf)
+    trailer = pymupdf.mupdf.pdf_trailer(pdf)
 
     # PDF_NAME(Root) = PDF catalog
-    root = fitz.mupdf.pdf_new_name("Root")
+    root = pymupdf.mupdf.pdf_new_name("Root")
 
     # access catalog
-    catalog = fitz.mupdf.pdf_dict_get(trailer, root)
+    catalog = pymupdf.mupdf.pdf_dict_get(trailer, root)
     dest_dict = {}
 
     # make PDF_NAME(Dests)
-    dests = fitz.mupdf.pdf_new_name("Dests")
+    dests = pymupdf.mupdf.pdf_new_name("Dests")
 
     # extract destinations old style (PDF 1.1)
-    old_dests = fitz.mupdf.pdf_dict_get(catalog, dests)
+    old_dests = pymupdf.mupdf.pdf_dict_get(catalog, dests)
     if old_dests.pdf_is_dict():
         fill_dict(dest_dict, old_dests)
 
     # extract destinations new style (PDF 1.2+)
-    tree = fitz.mupdf.pdf_load_name_tree(pdf, dests)
+    tree = pymupdf.mupdf.pdf_load_name_tree(pdf, dests)
     if tree.pdf_is_dict():
         fill_dict(dest_dict, tree)
 

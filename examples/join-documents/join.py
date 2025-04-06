@@ -38,11 +38,11 @@ except:
 print("wxPython:", wx.version())
 
 try:
-    import fitz
+    import pymupdf
 except:
-    print(__file__, "needs PyMuPDF (fitz).")
+    print(__file__, "needs PyMuPDF (pymupdf).")
     raise SystemExit
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 
 try:
     from icons import ico_pdf
@@ -460,7 +460,7 @@ class PDFDialog(wx.Dialog):
     def NewFile(self, event):
         pdf = event.GetPath()
         if pdf not in self.FileList:
-            doc = fitz.Document(pdf)
+            doc = pymupdf.Document(pdf)
             if doc.needs_pass:
                 wx.MessageBox(
                     "Cannot process encrypted file\n" + pdf, "Encrypted File Error"
@@ -492,9 +492,9 @@ def make_pdf(dlg):
     if not len(dlg.szr02.Table.data):  # no files there - quit
         return None
     # create time zone value in PDF format
-    cdate = fitz.get_pdf_now()
+    cdate = pymupdf.get_pdf_now()
     ausgabe = dlg.btn_aus.GetPath()
-    pdf_out = fitz.open()  # empty new PDF document
+    pdf_out = pymupdf.open()  # empty new PDF document
     aus_nr = 0  # current page number in output
     pdf_dict = {
         "creator": "PDF Joiner",
@@ -513,7 +513,7 @@ def make_pdf(dlg):
     # ==============================================================================
     for zeile in dlg.szr02.Table.data:
         dateiname = zeile[0]
-        doc = fitz.open(dateiname)
+        doc = pymupdf.open(dateiname)
         max_seiten = len(doc)
         # ==============================================================================
         # user input minus 1, PDF pages count from zero
@@ -548,9 +548,9 @@ def make_pdf(dlg):
         last_lvl = 1  # immunize against hierarchy gaps
         for t in toc:
             lnk_type = t[3]["kind"]  # if "goto", page must be in range
-            if (t[2] - 1) not in pno_range and lnk_type == fitz.LINK_GOTO:
+            if (t[2] - 1) not in pno_range and lnk_type == pymupdf.LINK_GOTO:
                 continue
-            if lnk_type == fitz.LINK_GOTO:
+            if lnk_type == pymupdf.LINK_GOTO:
                 pno = pno_range.index(t[2] - 1) + aus_nr + 1
             # repair hierarchy gaps by filler bookmarks
             while t[0] > last_lvl + 1:
@@ -584,7 +584,7 @@ assert (wx.VERSION[0], wx.VERSION[1], wx.VERSION[2]) >= (
     0,
     2,
 ), "need wxPython 3.0.2 or later"
-assert [int(x) for x in fitz.VersionBind.split(".")] >= [
+assert [int(x) for x in pymupdf.VersionBind.split(".")] >= [
     1,
     11,
     0,

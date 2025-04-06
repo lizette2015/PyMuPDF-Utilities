@@ -10,13 +10,13 @@ python convert.py input.txt
 """
 
 import sys
-import fitz
+import pymupdf
 
 assert len(sys.argv) == 2, "usage: python %s text.file" % (sys.argv[0],)
 ifn = sys.argv[1]
 ofn = "output.pdf"
 
-width, height = fitz.paper_size("a4")
+width, height = pymupdf.paper_size("a4")
 fontsz = 10
 lineheight = fontsz * 1.2
 
@@ -28,7 +28,7 @@ total_ctr = 0  # total line counter
 out_ctr = 0  # count output lines
 out_buf = ""  # text of one page
 
-doc = fitz.open()
+doc = pymupdf.open()
 
 
 def page_out(b):
@@ -62,24 +62,24 @@ print(ofn, "contains", len(doc), "pages.")
 # Now add a header and footer to each page
 hdr_fontsz = 16
 ftr_fontsz = 8
-blue = fitz.pdfcolor["blue"]
+blue = pymupdf.pdfcolor["blue"]
 pspace = 500
 
 for page in doc:
     footer = "%i (%i)" % (page.number + 1, len(doc))  # footer text
-    plen_ftr = fitz.get_text_length(footer, fontname="Helvetica", fontsize=ftr_fontsz)
+    plen_ftr = pymupdf.get_text_length(footer, fontname="Helvetica", fontsize=ftr_fontsz)
     page.insert_text(
         (50, 50), ifn, color=blue, fontsize=hdr_fontsz  # header = input filename
     )
     page.draw_line(
-        fitz.Point(50, 60),
-        fitz.Point(50 + pspace, 60),  # line below hdr
+        pymupdf.Point(50, 60),
+        pymupdf.Point(50 + pspace, 60),  # line below hdr
         color=blue,
         width=0.5,
     )
     page.draw_line(
-        fitz.Point(50, height - 33),  # line above footer
-        fitz.Point(50 + pspace, height - 33),
+        pymupdf.Point(50, height - 33),  # line above footer
+        pymupdf.Point(50 + pspace, height - 33),
         color=blue,
         width=0.5,
     )
@@ -93,10 +93,10 @@ for page in doc:
 
 doc.set_metadata(
     {
-        "creationDate": fitz.get_pdf_now(),
-        "modDate": fitz.get_pdf_now(),
+        "creationDate": pymupdf.get_pdf_now(),
+        "modDate": pymupdf.get_pdf_now(),
         "creator": "convert.py",
-        "producer": "PyMuPDF %s" % fitz.VersionBind,
+        "producer": "PyMuPDF %s" % pymupdf.VersionBind,
         "title": "Content of file " + ifn,
         "subject": "Demonstrate methods new_page, insert_text and draw_line",
         "author": "Jorj McKie",

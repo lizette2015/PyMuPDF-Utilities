@@ -20,20 +20,20 @@ PyMuPDF
 """
 
 from __future__ import print_function
-import fitz, sys
+import pymupdf, sys
 
-src = fitz.open(sys.argv[1])
-doc = fitz.open()
+src = pymupdf.open(sys.argv[1])
+doc = pymupdf.open()
 
 for spage in src:
     xref = 0
     r = spage.rect
-    d = fitz.Rect(spage.cropbox_position, spage.cropbox_position)
+    d = pymupdf.Rect(spage.cropbox_position, spage.cropbox_position)
 
     r1 = r * 0.5  # top left
     r2 = r1 + (r1.width, 0, r1.width, 0)  # top right
     r3 = r1 + (0, r1.height, 0, r1.height)  # bottom left
-    r4 = fitz.Rect(r1.br, r.br)  # bottom right
+    r4 = pymupdf.Rect(r1.br, r.br)  # bottom right
     rect_list = [r1, r2, r3, r4]
 
     for rx in rect_list:

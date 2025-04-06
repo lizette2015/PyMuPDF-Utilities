@@ -51,12 +51,12 @@ import os
 import sys
 import time
 
-import fitz
+import pymupdf
 import PySimpleGUI as sg
 
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 
-if not tuple(map(int, fitz.version[0].split("."))) >= (1, 18, 18):
+if not tuple(map(int, pymupdf.version[0].split("."))) >= (1, 18, 18):
     raise SystemExit("require PyMuPDF v1.18.18+")
 
 dimlimit = 0  # 100  # each image side must be greater than this
@@ -74,15 +74,15 @@ def recoverpix(doc, item):
 
     # special case: /SMask or /Mask exists
     if smask > 0:
-        pix0 = fitz.Pixmap(doc.extract_image(xref)["image"])
+        pix0 = pymupdf.Pixmap(doc.extract_image(xref)["image"])
         if pix0.alpha:  # catch irregular situation
-            pix0 = fitz.Pixmap(pix0, 0)  # remove alpha channel
-        mask = fitz.Pixmap(doc.extract_image(smask)["image"])
+            pix0 = pymupdf.Pixmap(pix0, 0)  # remove alpha channel
+        mask = pymupdf.Pixmap(doc.extract_image(smask)["image"])
 
         try:
-            pix = fitz.Pixmap(pix0, mask)
+            pix = pymupdf.Pixmap(pix0, mask)
         except:  # fallback to original base image in case of problems
-            pix = fitz.Pixmap(doc.extract_image(xref)["image"])
+            pix = pymupdf.Pixmap(doc.extract_image(xref)["image"])
 
         if pix0.n > 3:
             ext = "pam"
@@ -98,8 +98,8 @@ def recoverpix(doc, item):
     # special case: /ColorSpace definition exists
     # to be sure, we convert these cases to RGB PNG images
     if "/ColorSpace" in doc.xref_object(xref, compressed=True):
-        pix = fitz.Pixmap(doc, xref)
-        pix = fitz.Pixmap(fitz.csRGB, pix)
+        pix = pymupdf.Pixmap(doc, xref)
+        pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
         return {  # create dictionary expected by caller
             "ext": "png",
             "colorspace": 3,
@@ -115,7 +115,7 @@ if not fname:
     raise SystemExit()
 
 t0 = time.time()
-doc = fitz.open(fname)
+doc = pymupdf.open(fname)
 
 page_count = doc.page_count  # number of pages
 

@@ -20,14 +20,14 @@ import math
 import os
 import time
 
-import fitz
+import pymupdf
 
 w = 150  # PDF page width, also determines triangle size.
 h = 0.5 * math.sqrt(3) * w  # this makes triangle equal-sided
-doc = fitz.open()  # empty new PDF
+doc = pymupdf.open()  # empty new PDF
 page = doc.new_page(-1, width=w, height=h)  # make a new page
 color1 = (0, 0, 1)  # start triangle is filled with this (blue)
-fill = fitz.utils.getColor("papayawhip")  # cut out triangle fill color
+fill = pymupdf.utils.getColor("papayawhip")  # cut out triangle fill color
 shape = page.new_shape()  # make a new Shape object
 
 
@@ -67,7 +67,7 @@ a = page.rect.bl + (5, -5)  # go away 5 pixels from corner
 b = page.rect.br + (-5, -5)  # go away 5 pixels from corner
 x = (b.x - a.x) * 0.5  # middle point of line
 y = a.y - x * math.sqrt(3)
-c = fitz.Point(x, y)  # top corner of drawn triangle
+c = pymupdf.Point(x, y)  # top corner of drawn triangle
 
 shape.draw_polyline((a, b, c))  # draw start triangle on it
 shape.finish(fill=color1, closePath=True)  # colorize it
@@ -87,9 +87,9 @@ meta = {
     "subject": "Demonstration of PyMuPDF's features",
     "keywords": "PDF, fractal, Sierpinski, triangle",
     "creator": os.path.basename(__file__),
-    "producer": "PyMuPDF v%s" % fitz.VersionBind,
-    "creationDate": fitz.get_pdf_now(),
-    "modDate": fitz.get_pdf_now(),
+    "producer": "PyMuPDF v%s" % pymupdf.VersionBind,
+    "creationDate": pymupdf.get_pdf_now(),
+    "modDate": pymupdf.get_pdf_now(),
 }
 doc.set_metadata(meta)
 doc.save("output_triangle.pdf", deflate=True)

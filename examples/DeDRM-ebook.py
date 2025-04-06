@@ -1,6 +1,6 @@
 from __future__ import print_function
 import pyautogui
-import fitz
+import pymupdf
 import time
 
 """
@@ -56,7 +56,7 @@ time.sleep(5)
 print("starting process now")
 print("Hands off! The e-book window needs focus all the time!")
 
-doc = fitz.open()  # new empty PDF
+doc = pymupdf.open()  # new empty PDF
 old_samples = None  # used to check end of e-book
 i = 0
 while 1:
@@ -66,7 +66,7 @@ while 1:
         print("end of book encountered ... finishing")
         break
     old_samples = samples  # store this page image
-    pix = fitz.Pixmap(fitz.csGRAY, img.size[0], img.size[1], samples, 0)
+    pix = pymupdf.Pixmap(pymupdf.csGRAY, img.size[0], img.size[1], samples, 0)
     page = doc.new_page(-1, width=width, height=height)
     page.insert_image(page.rect, pixmap=pix)  # insert screen print as image
     pyautogui.hotkey("pagedown")  # next page in e-book reader

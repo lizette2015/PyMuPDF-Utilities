@@ -22,7 +22,7 @@ Step 2: Extract page text as single words and put each word string in the
 Step 3: Output Python table as a pandas DataFrame (resp. Excel file).
 
 """
-import fitz
+import pymupdf
 import pandas as pd
 
 """
@@ -36,7 +36,7 @@ trying to fit strings in externally defined rectangles - as is the case
 with gridlines.
 -------------------------------------------------------------------------
 """
-fitz.Tools().set_small_glyph_heights(True)
+pymupdf.Tools().set_small_glyph_heights(True)
 
 
 def main(page, table_bbox):
@@ -114,11 +114,11 @@ def main(page, table_bbox):
     # put the text pieces into the Python cells
     for w in page.get_text(
         "words",
-        flags=fitz.TEXTFLAGS_TEXT & ~fitz.TEXT_PRESERVE_LIGATURES,
+        flags=pymupdf.TEXTFLAGS_TEXT & ~pymupdf.TEXT_PRESERVE_LIGATURES,
         sort=True,
         clip=table_bbox,
     ):
-        ridx, cidx = getcoord(fitz.Rect(w[:4]), w[4])
+        ridx, cidx = getcoord(pymupdf.Rect(w[:4]), w[4])
         cells[ridx][cidx] += w[4] + " "  # append to stuff already in that cell
 
     # -------------------------------------------------------------------------
@@ -144,11 +144,11 @@ if __name__ == "__main__":
     import sys
 
     filename = sys.argv[1]
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     page = doc[0]
     # Locate table on page.
     # Assuming here, that we can access a JSON version.
     clip = json.loads(pathlib.Path(filename.replace(".pdf", "-bbox.json")).read_text())
-    clip = fitz.Rect(clip)
+    clip = pymupdf.Rect(clip)
     df = main(page, clip)
     df.to_excel(doc.name + ".xlsx")

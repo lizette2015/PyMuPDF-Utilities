@@ -9,9 +9,9 @@ Usage
 python replace.py
 """
 
-import fitz
+import pymupdf
 
-if tuple(map(int, fitz.VersionBind.split("."))) < (1, 19, 5):
+if tuple(map(int, pymupdf.VersionBind.split("."))) < (1, 19, 5):
     raise ValueError("Need v1.19.5+")
 
 
@@ -19,7 +19,7 @@ def img_replace(page, xref, filename=None, stream=None, pixmap=None):
     """Replace image identified by xref.
 
     Args:
-        page: a fitz.Page object
+        page: a pymupdf.Page object
         xref: cross reference number of image to replace
         filename, stream, pixmap: must be given as for
         page.insert_image().
@@ -40,7 +40,7 @@ def img_replace(page, xref, filename=None, stream=None, pixmap=None):
 
 
 if __name__ == "__main__":
-    doc = fitz.open("input.pdf")
+    doc = pymupdf.open("input.pdf")
     img_file = "input.jpg"
     page = doc[0]
     images = page.get_images()  # we only are interested in first image here

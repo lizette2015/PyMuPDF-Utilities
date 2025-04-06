@@ -1,8 +1,8 @@
 import pathlib
-import fitz
+import pymupdf
 from Reports import *
 
-report = Report(mediabox=fitz.paper_rect("a4-l"))
+report = Report(mediabox=pymupdf.paper_rect("a4-l"))
 
 HTML = pathlib.Path("springer.html").read_bytes().decode()
 textblock = Block(html=HTML, report=report)

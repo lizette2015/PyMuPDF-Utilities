@@ -20,9 +20,9 @@ Please note that the code works unchanged also for other supported document
 types, such as XPS or EPUB, etc.
 """
 
-import fitz
+import pymupdf
 
-doc = fitz.open("invoice-simple.pdf")  # example document
+doc = pymupdf.open("invoice-simple.pdf")  # example document
 page = doc[0]  # first page
 words = page.get_text("words", sort=True)  # extract sorted words
 

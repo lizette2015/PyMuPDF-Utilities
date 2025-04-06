@@ -19,9 +19,9 @@ PySimpleGUI, tkinter, optional: requires Python 3 if used
 """
 
 from __future__ import print_function
-import os, time, sys, fitz
+import os, time, sys, pymupdf
 
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 # do some adjustments whether Python v2 or v3
 if str is not bytes:
     import PySimpleGUI as psg
@@ -43,13 +43,13 @@ if not imgdir:
 
 t0 = mytime()  # set start timer
 
-width, height = fitz.paper_size("a6-l")  # get paper format
+width, height = pymupdf.paper_size("a6-l")  # get paper format
 
-doc = fitz.open()  # open empty PDF
+doc = pymupdf.open()  # open empty PDF
 page = doc.new_page(width=width, height=height)  # make new page
 
 # define sub rect to receive text and annotation symbols
-rect = fitz.Rect(0, 0, width, height) + (36, 36, -36, -36)
+rect = pymupdf.Rect(0, 0, width, height) + (36, 36, -36, -36)
 
 imglist = os.listdir(imgdir)  # directory listing
 imgcount = len(imglist)  # number of files
@@ -86,7 +86,7 @@ for i, f in enumerate(imglist):
 
     point += (25, 0)  # position of next symbol
     if point.x >= rect.width:  # beyond right limit?
-        point = fitz.Point(rect.x0, point.y + 35)  # start next line
+        point = pymupdf.Point(rect.x0, point.y + 35)  # start next line
     if point.y >= rect.height and i < imgcount - 1:  # beyond bottom limit?
         # prepare another page
         page = doc.new_page(width=width, height=height)

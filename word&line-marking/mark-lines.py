@@ -17,9 +17,9 @@ Our example page has 3 text columns, and we luckily know that our text is
 located in the left column. We also know unique text strings which help us
 find the start and stop points.
 """
-import fitz
+import pymupdf
 
-doc = fitz.open("search.pdf")  # the document
+doc = pymupdf.open("search.pdf")  # the document
 page = doc[0]  # the page
 
 # determine start point

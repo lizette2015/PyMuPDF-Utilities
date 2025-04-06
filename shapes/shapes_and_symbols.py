@@ -1,5 +1,5 @@
-import fitz
-from fitz.utils import getColor
+import pymupdf
+from pymupdf.utils import getColor
 """
 -------------------------------------------------------------------------------
 Created on Fri Nov 10 07:00:00 2017
@@ -28,13 +28,13 @@ smiley(img, rect, ...)
 
 Allmost all functions have the same first and second parameter:
 
-img    - fitz.Shape object created by p.new_shape()
-rect   - fitz.Rect object. This is the area in which the image should appear.
+img    - pymupdf.Shape object created by p.new_shape()
+rect   - pymupdf.Rect object. This is the area in which the image should appear.
 
 Other parameters are function-specific, but always include a "morph" argument.
 This can be used to change the image's appearance in an almost arbitrary way:
-rotation, shearing, mirroring. For this you must provide a fitz.Point and a
-fitz.Matrix object. See PyMuPDF documentation, chapter "Shape".
+rotation, shearing, mirroring. For this you must provide a pymupdf.Point and a
+pymupdf.Matrix object. See PyMuPDF documentation, chapter "Shape".
 
 -------------------------------------------------------------------------------
 Available functions
@@ -185,7 +185,7 @@ def hand(img, r, color = None, fill = None, morph = None):
 
     x0 = r.x0 + (r.width - w) * 0.5
     y0 = r.y0 + (r.height - h) * 0.5
-    rect = fitz.Rect(x0, y0, x0 + w, y0 + h)
+    rect = pymupdf.Rect(x0, y0, x0 + w, y0 + h)
 
     if not color:
         line = getColor("orange")
@@ -207,7 +207,7 @@ def hand(img, r, color = None, fill = None, morph = None):
     f = rect.height / 3
     tl = rect.tl                           # need this as displacement
     # function for rescaling the points in the list
-    rescale = lambda x: fitz.Point(points[x])*f + tl
+    rescale = lambda x: pymupdf.Point(points[x])*f + tl
     p1  = rescale(0)
     p2  = rescale(1)
     p3  = rescale(2)
@@ -223,10 +223,10 @@ def hand(img, r, color = None, fill = None, morph = None):
     p13 = rescale(12)
 
     # some additional helper points for Bezier curves of the finger tips.
-    d1 = fitz.Point(0.4, 0) *f
-    d7 = p7 - fitz.Point(1.2, 0) * f
-    d9 = fitz.Point(d7.x, p9.y)
-    d11 = fitz.Point(d7.x, p11.y)
+    d1 = pymupdf.Point(0.4, 0) *f
+    d7 = p7 - pymupdf.Point(1.2, 0) * f
+    d9 = pymupdf.Point(d7.x, p9.y)
+    d11 = pymupdf.Point(d7.x, p11.y)
     # now draw everything
     # IMPORTANT: the end point of each draw method must equal the start point
     # of the next one in order to create one connected path. Only then the
@@ -272,14 +272,14 @@ def pencil(img, rect, right=True, morph=None):
 def _pencil(img, penciltip, pb_height, left=True, morph = None):
     """Draw a pencil image. Parameters:
     img       -  Shape object
-    penciltip - fitz.Point, coordinates of the pencil tip
+    penciltip - pymupdf.Point, coordinates of the pencil tip
     pb_height - the thickness of the pencil. This controls the dimension of the
                 picture: it will be contained in a rectangle of 100 x 345 pixels
                 if this parameter is 100.
     left      - bool, indicates whether the pencil points left (True) or right.
     morph     - a tuple (point, matrix) to achieve image torsion.
     """
-    from fitz.utils import getColor
+    from pymupdf.utils import getColor
     from functools import partial
     # define some colors
     yellow  = getColor("darkgoldenrod")
@@ -299,19 +299,19 @@ def _pencil(img, penciltip, pb_height, left=True, morph = None):
     myfinish = partial(img.finish, width = w, morph = morph, closePath = False)
     oneof = lambda l, r: l if left else r        # choose an alternative
     s = oneof(1,-1)
-    tipendtop = penciltip + fitz.Point(s, -0.5) * pb_height
-    tipendbot = penciltip + fitz.Point(s, 0.5) * pb_height
-    r = fitz.Rect(tipendtop,
+    tipendtop = penciltip + pymupdf.Point(s, -0.5) * pb_height
+    tipendbot = penciltip + pymupdf.Point(s, 0.5) * pb_height
+    r = pymupdf.Rect(tipendtop,
                   tipendbot + (pb_width * s, 0)) # pencil body
     r.normalize()                                # force r to be finite
     # topline / botline indicate the pencil edges
-    topline0  = fitz.Point(r.x0 + r.width*0.1,
+    topline0  = pymupdf.Point(r.x0 + r.width*0.1,
                            r.y0 + pb_height/5.)  # upper pencil edge - left
-    topline1  = fitz.Point(r.x0 + r.width*0.9,
+    topline1  = pymupdf.Point(r.x0 + r.width*0.9,
                            topline0.y)           # upper epncil edge - right
-    botline0  = fitz.Point(r.x0 + r.width*0.1,
+    botline0  = pymupdf.Point(r.x0 + r.width*0.1,
                            r.y1 - pb_height/5.)  # lower pencil edge - left
-    botline1  = fitz.Point(r.x0 + r.width*0.9,
+    botline1  = pymupdf.Point(r.x0 + r.width*0.9,
                            botline0.y)           # lower pencil edge - right
 
     # control point 1 for pencil rubber
@@ -332,7 +332,7 @@ def _pencil(img, penciltip, pb_height, left=True, morph = None):
     #===========================================================================
     # black rectangle near pencil rubber
     #===========================================================================
-    blackrect = fitz.Rect(oneof((r.tr - (pb_height/2., 0)), r.tl),
+    blackrect = pymupdf.Rect(oneof((r.tr - (pb_height/2., 0)), r.tl),
                           oneof(r.br, (r.bl + (pb_height/2., 0))))
     img.draw_rect(blackrect)
     myfinish(fill = black)
@@ -352,7 +352,7 @@ def _pencil(img, penciltip, pb_height, left=True, morph = None):
     p2 = oneof(topline0, topline1)
     p3 = oneof(botline0, botline1)
     p4 = tipendbot
-    p0 = -fitz.Point(pb_height/5., 0)*s     # horiz. displacment of ctrl points
+    p0 = -pymupdf.Point(pb_height/5., 0)*s     # horiz. displacment of ctrl points
     cp1 = p1 + (p2-p1)*0.5 + p0             # ctrl point upper rounding
     cp2 = p2 + (p3-p2)*0.5 + p0*2.9         # ctrl point middle rounding
     cp3 = p3 + (p4-p3)*0.5 + p0             # ctrl point lower rounding
@@ -389,16 +389,16 @@ def _pencil(img, penciltip, pb_height, left=True, morph = None):
     #===========================================================================
     # draw pencil label - first a rounded rectangle
     #===========================================================================
-    p1 = fitz.Point(0.65, 0.15) * pb_height
-    p2 = fitz.Point(0.45, 0.15) * pb_height
-    lblrect = fitz.Rect(topline0 + oneof(p1, p2),
+    p1 = pymupdf.Point(0.65, 0.15) * pb_height
+    p2 = pymupdf.Point(0.45, 0.15) * pb_height
+    lblrect = pymupdf.Rect(topline0 + oneof(p1, p2),
                         botline1 - oneof(p2, p1))
     img.draw_rect(lblrect)
     img.draw_curve(lblrect.tr,
-                   fitz.Point(lblrect.x1+pb_height/4., penciltip.y),
+                   pymupdf.Point(lblrect.x1+pb_height/4., penciltip.y),
                    lblrect.br)
     img.draw_curve(lblrect.tl,
-                   fitz.Point(lblrect.x0-pb_height/4., penciltip.y),
+                   pymupdf.Point(lblrect.x0-pb_height/4., penciltip.y),
                    lblrect.bl)
     myfinish(fill = black)
 
@@ -430,9 +430,9 @@ def smiley(img, rect, color = (0,0,0), fill = (1,1,0), morph = None):
     img.draw_oval(rect)                      # draw face
     img.finish(fill = fill, width = w, morph = morph)
     # calculate rectangles containing the eyes
-    rl = fitz.Rect(rect.tl + (dx, dy),
+    rl = pymupdf.Rect(rect.tl + (dx, dy),
                    rect.tl + (2 * dx, 2 * dy))
-    rr = fitz.Rect(rect.tr + (-2 * dx, dy),
+    rr = pymupdf.Rect(rect.tr + (-2 * dx, dy),
                    rect.tr + (-dx, 2 * dy))
     img.draw_oval(rl)                        # draw left eye
     img.draw_oval(rr)                        # draw right eye
@@ -453,9 +453,9 @@ def frowney(img, rect, color = (0,0,0), fill = (1,1,0), morph = None):
     img.draw_oval(rect)                      # draw face
     img.finish(fill = fill, width = w, morph = morph)
     # calculate rectangles containing the eyes
-    rl = fitz.Rect(rect.tl + (dx, dy),
+    rl = pymupdf.Rect(rect.tl + (dx, dy),
                    rect.tl + (2 * dx, 2 * dy))
-    rr = fitz.Rect(rect.tr + (-2 * dx, dy),
+    rr = pymupdf.Rect(rect.tr + (-2 * dx, dy),
                    rect.tr + (-dx, 2 * dy))
     img.draw_oval(rl)                        # draw left eye
     img.draw_oval(rr)                        # draw right eye
@@ -481,10 +481,10 @@ getSVGimage(matrix = ...).
 if __name__ == "__main__":
     green = getColor("limegreen")
     red = getColor("red2")
-    doc = fitz.open()
+    doc = pymupdf.open()
     p = doc.new_page()
     img = p.new_shape()
-    r = fitz.Rect(100, 100, 200, 200)
+    r = pymupdf.Rect(100, 100, 200, 200)
     heart(img, r, red)
     img.commit()
     p.set_cropbox(r + (10, 10, -10, -15))
@@ -492,7 +492,7 @@ if __name__ == "__main__":
     p = doc.new_page()
     img = p.new_shape()
     pnt = r.tl + (r.br - r.tl)*0.5
-    clover(img, r, green, morph = (pnt, fitz.Matrix(45)))
+    clover(img, r, green, morph = (pnt, pymupdf.Matrix(45)))
     img.commit()
     p.set_cropbox(r + (5, 5, -5, -5))
 
@@ -505,14 +505,14 @@ if __name__ == "__main__":
     p = doc.new_page()
     img = p.new_shape()
     pnt = r.tl + (r.br - r.tl)*0.5
-    caro(img, r, red, morph = (pnt, fitz.Matrix(45)))
+    caro(img, r, red, morph = (pnt, pymupdf.Matrix(45)))
     img.commit()
     p.set_cropbox(r + (10, 10, -10, -10))
 
     p = doc.new_page()
     img = p.new_shape()
     pnt = r.tl + (r.br - r.tl)*0.5
-    arrow(img, r, fill=red, morph = (pnt, fitz.Matrix(1,1)))
+    arrow(img, r, fill=red, morph = (pnt, pymupdf.Matrix(1,1)))
     img.commit()
     p.set_cropbox(r)
 
@@ -566,8 +566,8 @@ if __name__ == "__main__":
          'keywords': "symbols, shapes, signs",
          'creator': "shapes_and_symbols.py",
          'producer': "PyMuPDF",
-         'creationDate': fitz.get_pdf_now(),
-         'modDate': fitz.get_pdf_now()}
+         'creationDate': pymupdf.get_pdf_now(),
+         'modDate': pymupdf.get_pdf_now()}
     doc.set_metadata(m)
     import os
     scriptdir = os.path.dirname(__file__)

@@ -34,14 +34,14 @@ PySimpleGUI, tkinter
 import os
 import time
 
-import fitz
+import pymupdf
 import PySimpleGUI as sg
 
 mytime = time.perf_counter
 
-if not list(map(int, fitz.VersionBind.split("."))) >= [1, 14, 5]:
+if not list(map(int, pymupdf.VersionBind.split("."))) >= [1, 14, 5]:
     raise SystemExit("need PyMuPDF v1.14.5 for this script")
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 
 # ------------------------------------------------------------------------------
 # make one page
@@ -55,11 +55,11 @@ def make_oval(f):
     discarded again. The execution speed of this function mainly determines
     the number of "frames" shown per second.
     """
-    doc = fitz.open()  # dummy PDF
+    doc = pymupdf.open()  # dummy PDF
     page = doc.new_page(width=400, height=400)  # page dimensions as you like
     r = page.rect + (4, 4, -4, -4)
     q = r.quad  # full page rect as a quad
-    q1 = fitz.Quad(
+    q1 = pymupdf.Quad(
         q.lr + (q.ul - q.lr) * f, q.ur, q.ll, q.ul + (q.lr - q.ul) * f  # upper left
     )  # lower right
     # make an entertaining fill color - simulating rotation around

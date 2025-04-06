@@ -56,7 +56,7 @@ Changes
   potentially different name variants in the various entangled PDF objects
   like /FontName, /BaseName, etc.
 """
-import fitz
+import pymupdf
 import sys
 import json
 
@@ -131,7 +131,7 @@ def make_msg(font):
 
 infilename = sys.argv[1]
 font_list = set()
-doc = fitz.open(infilename)
+doc = pymupdf.open(infilename)
 for i in range(len(doc)):
     for f in doc.get_page_fonts(i, full=True):
         msg = ""
@@ -141,7 +141,7 @@ for i in range(len(doc)):
             msg = "Not embedded!"
         else:
             extr = doc.extract_font(f[0])
-            font = fitz.Font(fontbuffer=extr[-1])
+            font = pymupdf.Font(fontbuffer=extr[-1])
             msg = make_msg(font)
 
         if subset:

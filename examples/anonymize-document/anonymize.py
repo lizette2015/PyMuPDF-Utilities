@@ -16,7 +16,7 @@ deleted.
 """
 
 import sys
-import fitz
+import pymupdf
 
 
 def remove_txt(cont):
@@ -47,7 +47,7 @@ def remove_txt(cont):
 assert len(sys.argv) == 2, "need input PDF file name"
 fn = sys.argv[1]
 assert fn.endswith(".pdf"), "expect a PDF file"
-doc = fitz.open(fn)
+doc = pymupdf.open(fn)
 doc.set_metadata({})  # set metadata values to "none"
 doc.del_xml_metadata()  # delete any XML metadata
 for page in doc:

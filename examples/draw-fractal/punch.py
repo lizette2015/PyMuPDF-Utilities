@@ -32,11 +32,11 @@ The time required to save the resulting PNG image very much depends on image
 """
 
 from __future__ import print_function
-import fitz, time
+import pymupdf, time
 
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 
-if not list(map(int, fitz.VersionBind.split("."))) >= [1, 14, 8]:
+if not list(map(int, pymupdf.VersionBind.split("."))) >= [1, 14, 8]:
     raise SystemExit("need PyMuPDF v1.14.8 for this script")
 
 mytime = time.clock if str is bytes else time.perf_counter
@@ -47,13 +47,13 @@ d = 3**n  # edge length
 t0 = mytime()
 ir = (0, 0, d, d)  # the pixmap rectangle
 
-pm = fitz.Pixmap(fitz.csRGB, ir, False)
+pm = pymupdf.Pixmap(pymupdf.csRGB, ir, False)
 pm.set_rect(pm.irect, (255, 255, 0))  # fill it with some background color
 
 color = (0, 0, 255)  # color to fill the punch holes
 
 # define 'fill' pixmap for the punch holes
-fill = fitz.Pixmap(pm, pm.alpha)  # copy pm
+fill = pymupdf.Pixmap(pm, pm.alpha)  # copy pm
 fill.invert_irect()  # inverted colors of pm
 
 

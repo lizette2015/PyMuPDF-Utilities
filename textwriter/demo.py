@@ -1,18 +1,18 @@
-import fitz, os
+import pymupdf, os
 
 thisdir = lambda f: os.path.join(os.path.dirname(__file__), f)
 thisfile = os.path.abspath(__file__)
 outfile = thisfile.replace(".py", ".pdf")
 
-font1 = fitz.Font("helv")
-font2 = fitz.Font("tiro")
-doc = fitz.open()
+font1 = pymupdf.Font("helv")
+font2 = pymupdf.Font("tiro")
+doc = pymupdf.open()
 page = doc.new_page()
-point = fitz.Point(50, 72)
-matrix = fitz.Matrix(-20)
+point = pymupdf.Point(50, 72)
+matrix = pymupdf.Matrix(-20)
 
-wrt1 = fitz.TextWriter(page.rect, color=(0, 0, 1))
-wrt2 = fitz.TextWriter(page.rect, color=(1, 0, 0))
+wrt1 = pymupdf.TextWriter(page.rect, color=(0, 0, 1))
+wrt2 = pymupdf.TextWriter(page.rect, color=(1, 0, 0))
 
 _, last = wrt1.append(point, "This text changes color,", font1, 11)
 _, last = wrt2.append(last, " font and fontsize", font2, 18)
@@ -27,7 +27,7 @@ wrt2.write_text(page, morph=(point, matrix))  # also preserves the joint text.
 page = doc.new_page()
 rect = wrt1.text_rect | wrt2.text_rect  # join rect of blue and red text
 # make new rectangle from it, rotated by 90 degrees
-nrect = fitz.Rect(
+nrect = pymupdf.Rect(
     rect.tl,  # same top-left, but width and height exchanged
     rect.x0 + rect.height,
     rect.y0 + rect.width,

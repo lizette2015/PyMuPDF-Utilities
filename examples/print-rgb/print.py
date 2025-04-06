@@ -16,11 +16,11 @@ The page is 800 x 600 px size.
 """
 
 from __future__ import print_function
-import fitz, sys, os
-from fitz.utils import getColor, getColorInfoList
+import pymupdf, sys, os
+from pymupdf.utils import getColor, getColorInfoList
 
 print(sys.version)
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 print("Running:", __file__)
 
 
@@ -38,14 +38,14 @@ white = getColor("white")  # text color
 fsize = 8  # fontsize
 lheight = fsize * 1.2  # line height
 idx = 0  # index in color database
-doc = fitz.open()  # empty PDF
+doc = pymupdf.open()  # empty PDF
 while idx < num_colors:
     page = doc.new_page(-1, width=w, height=h)  # new empty page
     for i in range(10):  # row index
         if idx >= num_colors:
             break
         for j in range(10):  # column index
-            rect = fitz.Rect(rw * j, rh * i, rw * j + rw, rh * i + rh)  # color rect
+            rect = pymupdf.Rect(rw * j, rh * i, rw * j + rw, rh * i + rh)  # color rect
             cname = mylist[idx][0].lower()  # color name
             col = mylist[idx][1:]  # color tuple -> to floats
             col = (col[0] / 255.0, col[1] / 255.0, col[2] / 255.0)
@@ -62,8 +62,8 @@ m = {
     "author": "Jorj X. McKie",
     "producer": "PyMuPDF",
     "creator": "examples/print-rgb/print.py",
-    "creationDate": fitz.get_pdf_now(),
-    "modDate": fitz.get_pdf_now(),
+    "creationDate": pymupdf.get_pdf_now(),
+    "modDate": pymupdf.get_pdf_now(),
     "title": "PyMuPDF Color Database",
     "subject": "Sorted down by RGB values",
 }

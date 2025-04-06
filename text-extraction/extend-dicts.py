@@ -8,10 +8,10 @@ with information from the Page method "get_texttrace()":
 * Opacity
 """
 
-import fitz
+import pymupdf
 import time
 
-doc = fitz.open("extend-dicts.pdf")
+doc = pymupdf.open("extend-dicts.pdf")
 page = doc[0]
 char_dict = {}
 t0 = time.perf_counter()
@@ -26,7 +26,7 @@ for span in page.get_texttrace():
 t1 = time.perf_counter()
 print(f"Number of characters detected {len(char_dict.keys())}.")
 
-text_blocks = page.get_text("dict", flags=fitz.TEXTFLAGS_TEXT)["blocks"]
+text_blocks = page.get_text("dict", flags=pymupdf.TEXTFLAGS_TEXT)["blocks"]
 t2 = time.perf_counter()
 for b in text_blocks:
     for l in b["lines"]:

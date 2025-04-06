@@ -13,12 +13,12 @@ some meta information.
 """
 import sys
 import time
-import fitz
+import pymupdf
 
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 t0 = time.time()
-doc1 = fitz.open(sys.argv[1])
-doc2 = fitz.open()
+doc1 = pymupdf.open(sys.argv[1])
+doc2 = pymupdf.open()
 red = (1, 0, 0)
 blue = (0, 0, 1)
 green = (0, 1, 0)
@@ -33,7 +33,7 @@ for page1 in doc1:
     img = page2.new_shape()  # prepare /Contents object
 
     # calculate /CropBox & displacement
-    disp = fitz.Rect(page1.cropbox_position, page1.cropbox_position)
+    disp = pymupdf.Rect(page1.cropbox_position, page1.cropbox_position)
     croprect = page1.rect + disp
 
     # draw original /CropBox rectangle
@@ -41,17 +41,17 @@ for page1 in doc1:
     img.finish(color=gray, fill=gray)
 
     for b in blks:  # loop through the blocks
-        r = fitz.Rect(b[:4])  # block rectangle
+        r = pymupdf.Rect(b[:4])  # block rectangle
         # add dislacement of original /CropBox
         r += disp
         img.draw_rect(r)  # surround block rectangle
 
         if b[-1] == 1:  # if image block ...
             color = red
-            a = fitz.TEXT_ALIGN_CENTER
+            a = pymupdf.TEXT_ALIGN_CENTER
         else:  # if text block
             color = blue
-            a = fitz.TEXT_ALIGN_LEFT
+            a = pymupdf.TEXT_ALIGN_LEFT
 
         img.finish(width=0.3, color=color)
 

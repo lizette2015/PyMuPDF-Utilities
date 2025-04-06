@@ -1,8 +1,8 @@
 import sqlite3
 import zipfile
-import fitz
+import pymupdf
 
-# from fitz.reports import Report, Block, Table
+# from pymupdf.reports import Report, Block, Table
 # until official release as part of PymuPDF use this import statement instead:
 from Reports import *
 # -----------------------------------------------------------------------------
@@ -57,7 +57,7 @@ td {padding-left: 3px;padding-right: 3px;}
 css = '@font-face {font-family: myfont; src: url("kenpixel.ttf");}'
 css += "* {font-family: myfont;}"
 
-mediabox = fitz.paper_rect("A4")
+mediabox = pymupdf.paper_rect("A4")
 report = Report(mediabox, css=css, archive=".")
 header = Block(html=HEADER, report=report)
 

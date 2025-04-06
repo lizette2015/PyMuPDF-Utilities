@@ -10,9 +10,9 @@ import os
 import sys
 import time
 import bisect
-import fitz
+import pymupdf
 from typing import List
-from fitz.fitz import (
+from pymupdf.pymupdf import (
     TEXT_INHIBIT_SPACES,
     TEXT_PRESERVE_LIGATURES,
     TEXT_PRESERVE_WHITESPACE,
@@ -31,12 +31,12 @@ def recoverpix(doc, item):
     def getimage(pix):
         if pix.colorspace.n != 4:
             return pix
-        tpix = fitz.Pixmap(fitz.csRGB, pix)
+        tpix = pymupdf.Pixmap(pymupdf.csRGB, pix)
         return tpix
 
     # we need to reconstruct the alpha channel with the smask
-    pix1 = fitz.Pixmap(doc, x)
-    pix2 = fitz.Pixmap(doc, s)  # create pixmap of the /SMask entry
+    pix1 = pymupdf.Pixmap(doc, x)
+    pix2 = pymupdf.Pixmap(doc, s)  # create pixmap of the /SMask entry
 
     """Sanity check:
     - both pixmaps must have the same rectangle
@@ -49,7 +49,7 @@ def recoverpix(doc, item):
         pix2 = None
         return getimage(pix1)  # return the pixmap as is
 
-    pix = fitz.Pixmap(pix1)  # copy of pix1, with an alpha channel added
+    pix = pymupdf.Pixmap(pix1)  # copy of pix1, with an alpha channel added
     pix.set_alpha(pix2.samples)  # treat pix2.samples as the alpha values
     pix1 = pix2 = None  # free temp pixmaps
 
@@ -59,7 +59,7 @@ def recoverpix(doc, item):
 
 def open_file(filename, password, show=False, pdf=True):
     """Open and authenticate a document."""
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     if not doc.is_pdf and pdf is True:
         sys.exit("this command supports PDF files only")
     rc = -1
@@ -221,7 +221,7 @@ def show(args):
 def poster(args):
     doc = open_file(args.input, args.password, pdf=True)
     pages = get_list(args.pages, doc.page_count + 1)
-    outdoc = fitz.open()
+    outdoc = pymupdf.open()
     outdoc.set_metadata(doc.metadata)
     for pno in pages:
         n = pno - 1
@@ -232,7 +232,7 @@ def poster(args):
         rects = []
         for i in range(args.y):
             for j in range(args.x):
-                r = fitz.Rect(j * w, i * h, (j + 1) * w, (i + 1) * h)
+                r = pymupdf.Rect(j * w, i * h, (j + 1) * w, (i + 1) * h)
                 opage = outdoc.new_page(width=w, height=h)
                 opage.show_pdf_page(opage.rect, doc, n, clip=r)
 
@@ -267,7 +267,7 @@ def clean(args):
 
     # create sub document from page numbers
     pages = get_list(args.pages, doc.page_count + 1)
-    outdoc = fitz.open()
+    outdoc = pymupdf.open()
     for pno in pages:
         n = pno - 1
         outdoc.insert_pdf(doc, from_page=n, to_page=n)
@@ -293,7 +293,7 @@ def clean(args):
 def doc_join(args):
     """Join pages from several PDF documents."""
     doc_list = args.input  # a list of input PDFs
-    doc = fitz.open()  # output PDF
+    doc = pymupdf.open()  # output PDF
     for src_item in doc_list:  # process one input PDF
         src_list = src_item.split(",")
         password = src_list[1] if len(src_list) > 1 else None
@@ -561,7 +561,7 @@ def extract_objects(args):
                         pix2 = (
                             pix
                             if pix.colorspace.n < 4
-                            else fitz.Pixmap(fitz.csRGB, pix)
+                            else pymupdf.Pixmap(pymupdf.csRGB, pix)
                         )
                         pix2.save(outname)
 
@@ -795,7 +795,7 @@ def page_layout(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
         text = ""  # we output this
         old_x1 = 0  # end coordinate of last char
         old_ox = 0  # x-origin of last char
-        if minslot <= fitz.EPSILON:
+        if minslot <= pymupdf.EPSILON:
             raise RuntimeError("program error: minslot too small = %g" % minslot)
 
         for c in lchars:  # loop over characters
@@ -907,7 +907,7 @@ def gettext(args):
 def main():
     """Define command configurations."""
     parser = argparse.ArgumentParser(
-        prog="fitz",
+        prog="pymupdf",
         description=mycenter("Basic PyMuPDF Functions"),
     )
     subps = parser.add_subparsers(

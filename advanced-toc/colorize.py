@@ -1,6 +1,6 @@
-import fitz
+import pymupdf
 
-doc = fitz.open("example.pdf")
+doc = pymupdf.open("example.pdf")
 toc = doc.get_toc(False)
 for i, item in enumerate(toc):
     lvl, title, pno, ddict = item

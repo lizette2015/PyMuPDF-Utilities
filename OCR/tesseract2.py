@@ -19,15 +19,15 @@ does not look at parts of a page containing images or text encoded as drawings.
 Dependencies:
 PyMuPDF v1.19.0
 """
-import fitz
+import pymupdf
 import time, os
 
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 tessdata = os.getenv("TESSDATA_PREFIX")
 print("Found tessdata here:", tessdata)
 print()
 
-mat = fitz.Matrix(5, 5)  # high resolution matrix
+mat = pymupdf.Matrix(5, 5)  # high resolution matrix
 ocr_time = 0
 pix_time = 0
 INVALID_UNICODE = chr(0xFFFD)  # the "Invalid Unicode" character
@@ -37,8 +37,8 @@ def get_tessocr(page, bbox):
     """Return OCR-ed span text using Tesseract.
 
     Args:
-        page: fitz.Page
-        bbox: fitz.Rect or its tuple
+        page: pymupdf.Page
+        bbox: pymupdf.Rect or its tuple
     Returns:
         The OCR-ed text of the bbox.
     """
@@ -50,7 +50,7 @@ def get_tessocr(page, bbox):
         clip=bbox,
     )
     t1 = time.perf_counter()
-    ocrpdf = fitz.open("pdf", pix.pdfocr_tobytes())
+    ocrpdf = pymupdf.open("pdf", pix.pdfocr_tobytes())
     ocrpage = ocrpdf[0]
     text = ocrpage.get_text()
     if text.endswith("\n"):
@@ -61,7 +61,7 @@ def get_tessocr(page, bbox):
     return text
 
 
-doc = fitz.open("v110-changes.pdf")
+doc = pymupdf.open("v110-changes.pdf")
 ocr_count = 0
 for page in doc:
     blocks = page.get_text("dict", flags=0)["blocks"]

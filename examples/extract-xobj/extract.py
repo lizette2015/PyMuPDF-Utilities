@@ -20,17 +20,17 @@ PyMuPDF
 
 import sys
 import time
-import fitz
+import pymupdf
 
-if fitz.VersionBind.split(".") < ["1", "16", "13"]:
+if pymupdf.VersionBind.split(".") < ["1", "16", "13"]:
     sys.exit("Need at least PyMuPDF v1.16.13")
 
 start_time = time.perf_counter()
 infile = sys.argv[1]  # input filename
-src = fitz.open(infile)  # open input
+src = pymupdf.open(infile)  # open input
 print("Processing '%s' with %i pages." % (infile, len(src)))
 outfile = "output.pdf"
-doc = fitz.open()  # output file
+doc = pymupdf.open()  # output file
 xobj_total = 0  # counts total number of extracted xobjects
 xrefs_encountered = []  # stores already extracted XObjects
 for pno in range(len(src)):
@@ -39,7 +39,7 @@ for pno in range(len(src)):
     for xobj in xobj_list:  # loop through them
         if xobj[2] != 0:  # if not occurring directly on the page
             continue  # skip
-        bbox = fitz.Rect(xobj[-1])  # bbox of XObject on input page
+        bbox = pymupdf.Rect(xobj[-1])  # bbox of XObject on input page
         if bbox.is_infinite:  # no associated valid bbox?
             continue  # skip
         if xobj[0] in xrefs_encountered:  # already extracted?

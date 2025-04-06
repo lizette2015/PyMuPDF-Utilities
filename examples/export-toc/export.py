@@ -10,7 +10,7 @@ python export.py -d ";" input.pdf
 """
 
 from __future__ import print_function
-import fitz
+import pymupdf
 import argparse
 
 parser = argparse.ArgumentParser(
@@ -22,7 +22,7 @@ args = parser.parse_args()
 delim = args.d  # requested CSV delimiter character
 fname = args.doc  # input document filename
 
-doc = fitz.open(fname)
+doc = pymupdf.open(fname)
 toc = doc.get_toc(simple=False)
 ext = fname[-3:].lower()
 outf = open("output.csv", "w")

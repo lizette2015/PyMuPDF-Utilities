@@ -4,10 +4,10 @@ from __future__ import print_function
 A demo showing all PDF form fields of a document.
 """
 import sys
-import fitz
+import pymupdf
 import time
 
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 
 t0 = time.perf_counter() if str is bytes else time.process_time()
 
@@ -77,7 +77,7 @@ def print_widget(w):
     print("")
 
 
-doc = fitz.open(sys.argv[1])
+doc = pymupdf.open(sys.argv[1])
 if not doc.is_form_pdf:
     sys.exit("'%s' has no form fields." % doc.name)
 print("".ljust(80, "-"))

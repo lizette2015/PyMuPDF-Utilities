@@ -44,7 +44,7 @@ Dependencies
 PyMuPDF v1.18.0
 """
 import time
-import fitz
+import pymupdf
 
 
 def find_words(page, word_tuple, prefix="", suffix="", lower=True):
@@ -70,7 +70,7 @@ def find_words(page, word_tuple, prefix="", suffix="", lower=True):
         return False
 
     rlist = []  # this will be returned
-    rect = fitz.Rect(word_tuple[:4])  # this is the word bbox
+    rect = pymupdf.Rect(word_tuple[:4])  # this is the word bbox
 
     # make dict of character details
     blocks = page.get_text("rawdict", clip=rect, flags=0)[  # restrict to word bbox
@@ -81,7 +81,7 @@ def find_words(page, word_tuple, prefix="", suffix="", lower=True):
         for line in block["lines"]:
             if line["spans"] == []:
                 continue
-            r = fitz.Rect()  # start with an empty rectangle
+            r = pymupdf.Rect()  # start with an empty rectangle
             checkword = ""
             for span in line["spans"]:
                 for char in span["chars"]:
@@ -93,7 +93,7 @@ def find_words(page, word_tuple, prefix="", suffix="", lower=True):
                     else:  # non-alphabetic character detected
                         if take_this(checkword, prefix, suffix, lower):
                             rlist.append((r, checkword))  # append what we have so far
-                        r = fitz.Rect()  # start over with empty rect
+                        r = pymupdf.Rect()  # start over with empty rect
                         checkword = ""
             if take_this(checkword, prefix, suffix, lower):
                 rlist.append((r, checkword))  # append any dangling rect
@@ -101,7 +101,7 @@ def find_words(page, word_tuple, prefix="", suffix="", lower=True):
 
 
 if __name__ == "__main__":
-    doc = fitz.open("search.pdf")
+    doc = pymupdf.open("search.pdf")
     page = doc[0]
     time0 = time.perf_counter()
     # make a list of "technical" words

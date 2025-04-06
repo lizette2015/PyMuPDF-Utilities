@@ -23,9 +23,9 @@ The resulting picture is save in three image formats: PDF, PNG and SVG / SVGZ
 from __future__ import print_function
 import gzip
 import math
-import fitz
+import pymupdf
 
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 
 
 def pvon(a):
@@ -39,12 +39,12 @@ def pbis(a):
 
 
 fileprfx = "output"  # filename prefix
-coffee = fitz.pdfcolor["coffee"]  # color: latte macchiato?
-yellow = fitz.pdfcolor["yellow"]  # color of sun rays
-blue = fitz.pdfcolor["blue"]  # color cup border
-doc = fitz.open()  # new empty PDF
+coffee = pymupdf.pdfcolor["coffee"]  # color: latte macchiato?
+yellow = pymupdf.pdfcolor["yellow"]  # color of sun rays
+blue = pymupdf.pdfcolor["blue"]  # color cup border
+doc = pymupdf.open()  # new empty PDF
 page = doc.new_page(-1, width=800, height=800)  # create square sized page
-center = fitz.Point(
+center = pymupdf.Point(
     page.rect.width / 2, page.rect.height / 2  # center of circle on page
 )
 
@@ -58,8 +58,8 @@ count = 200  # how many sun rays we draw
 interval = math.pi / count  # angle fraction
 for i in range(1, count):
     a = -math.pi / 2 + i * interval  # go from -90 to +90 degrees
-    von = fitz.Point(pvon(a)) * radius + center  # start point adjusted
-    bis = fitz.Point(pbis(a)) * radius + center  # end point adjusted
+    von = pymupdf.Point(pvon(a)) * radius + center  # start point adjusted
+    bis = pymupdf.Point(pbis(a)) * radius + center  # end point adjusted
     img.draw_line(von, bis)
 
 img.finish(width=1, color=yellow, closePath=False)  # a ray is a fine yellow line

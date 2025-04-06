@@ -20,12 +20,12 @@ PyMuPDF
 
 from __future__ import print_function
 import sys
-import fitz
+import pymupdf
 
 ifn = sys.argv[1]  # input PDF
 ofn = sys.argv[2]  # output PDF
-docin = fitz.open(ifn)
-docout = fitz.open(ofn)
+docin = pymupdf.open(ifn)
+docout = pymupdf.open(ofn)
 print("Copying embedded files from '%s' to '%s'" % (ifn, ofn))
 for i in range(docin.embfile_count()):
     d = docin.embfile_info(i)  # file metadata

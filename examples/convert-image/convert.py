@@ -14,10 +14,10 @@ Pillow
 """
 
 import sys
-import fitz
+import pymupdf
 from PIL import Image
 
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 
 if len(sys.argv) == 2:
     pic_fn = sys.argv[1]
@@ -29,6 +29,6 @@ if pic_fn:
     pic_f = open(pic_fn, "rb")
     img = Image.open(pic_f).convert("RGB")
     samples = img.tobytes()
-    pix = fitz.Pixmap(fitz.csRGB, img.size[0], img.size[1], samples, 0)
+    pix = pymupdf.Pixmap(pymupdf.csRGB, img.size[0], img.size[1], samples, 0)
     pix.save("output.png")
     pic_f.close()

@@ -10,13 +10,13 @@ python split.py input.pdf
 """
 
 import sys
-import fitz
+import pymupdf
 
 fn = sys.argv[1]
 fn1 = fn[:-4]
-src = fitz.open(fn)
+src = pymupdf.open(fn)
 for i in range(len(src)):
-    doc = fitz.open()
+    doc = pymupdf.open()
     doc.insert_pdf(src, from_page=i, to_page=i)
     doc.save("./output/%s-%i.pdf" % (fn1, i))
     doc.close()

@@ -13,10 +13,10 @@ as bullet-point symbols in some text.
 
 """
 
-import fitz
+import pymupdf
 import shapes_and_symbols as sas
 
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 # list of available symbol functions and their descriptions
 tlist = [
     (sas.arrow, "arrow (easy)"),
@@ -31,15 +31,15 @@ tlist = [
     (sas.smiley, "smiley (easy)"),
 ]
 
-r = fitz.Rect(50, 50, 100, 100)  # first rect to contain a symbol
-d = fitz.Rect(0, r.height + 10, 0, r.height + 10)  # displacement to next ret
+r = pymupdf.Rect(50, 50, 100, 100)  # first rect to contain a symbol
+d = pymupdf.Rect(0, r.height + 10, 0, r.height + 10)  # displacement to next ret
 p = (15, -r.height * 0.2)  # starting point of explanation text
 rlist = [r]  # rectangle list
 
 for i in range(1, len(tlist)):  # fill in all the rectangles
     rlist.append(rlist[i - 1] + d)
 
-doc = fitz.open()  # create empty PDF
+doc = pymupdf.open()  # create empty PDF
 page = doc.new_page()  # create an empty page
 img = page.new_shape()  # start a Shape (canvas)
 

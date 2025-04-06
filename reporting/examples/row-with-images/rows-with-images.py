@@ -1,10 +1,10 @@
 import pathlib
-import fitz
+import pymupdf
 import zipfile
 from Reports import *
 
 # The following defines the overall report object
-mediabox = fitz.paper_rect("a4")  # the only required parameter
+mediabox = pymupdf.paper_rect("a4")  # the only required parameter
 report = Report(mediabox, font_families={"sans-serif": "ubuntu", "serif": "ubuntu"})
 
 # Predefined HTML to define the header for all pages

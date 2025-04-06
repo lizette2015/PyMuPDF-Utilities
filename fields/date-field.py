@@ -11,17 +11,17 @@ validation. Consult this reference for other field types and situations,
 like inter-field validation and more:
 http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/Acro6JSGuide.pdf
 """
-import fitz
+import pymupdf
 
 # JavaScripts for defining a "date" field format and handling user keystrokes.
 JSF = 'AFDate_FormatEx("mm/dd/yyyy");'  # JS to define the format
 JSK = 'AFDate_KeystrokeEx("mm/dd/yyyy");'  # JS to handle keystrokes
 
-doc = fitz.open()
+doc = pymupdf.open()
 page = doc.new_page()
-w = fitz.Widget()  # create a skeleton Widget object
-w.field_type = fitz.PDF_WIDGET_TYPE_TEXT  # DATE fields are subtypes of TEXT
-w.rect = fitz.Rect(20, 20, 160, 80)  # where the date field appears on page
+w = pymupdf.Widget()  # create a skeleton Widget object
+w.field_type = pymupdf.PDF_WIDGET_TYPE_TEXT  # DATE fields are subtypes of TEXT
+w.rect = pymupdf.Rect(20, 20, 160, 80)  # where the date field appears on page
 w.field_name = "Date"  # give it a unique name
 w.field_value = "12/12/2022"  # field value
 

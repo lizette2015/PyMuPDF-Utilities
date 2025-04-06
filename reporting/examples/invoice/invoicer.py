@@ -1,12 +1,12 @@
 import pathlib
 import sqlite3
 
-import fitz
+import pymupdf
 
 from Reports import *
 
 # The following defines the overall report object
-mediabox = fitz.paper_rect("a4-l")
+mediabox = pymupdf.paper_rect("a4-l")
 report = Report(mediabox)
 
 # Predefined HTML to define the header for all pages
@@ -49,7 +49,7 @@ prolog_html = pathlib.Path("prolog.html").read_bytes().decode()
 
 # After reading the source, we access the content and fill in
 # data for the variables.
-prolog_story = fitz.Story(prolog_html)
+prolog_story = pymupdf.Story(prolog_html)
 body = prolog_story.body
 body.find(None, "id", "supplier").add_text(supplier)
 body.find(None, "id", "contact").add_text(contact)

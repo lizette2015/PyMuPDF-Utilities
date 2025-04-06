@@ -26,26 +26,26 @@ PyMuPDF
 """
 
 import sys
-import fitz
+import pymupdf
 
-if not (list(map(int, fitz.VersionBind.split("."))) >= [1, 13, 3]):
+if not (list(map(int, pymupdf.VersionBind.split("."))) >= [1, 13, 3]):
     raise SystemExit("insufficient PyMuPDF version")
 
 fn = sys.argv[1]
-doc = fitz.open(fn)
+doc = pymupdf.open(fn)
 
 if doc.is_pdf:
     raise SystemExit("document is PDF already")
 
 print("Converting '%s' to 'output.pdf'" % (fn))
 b = doc.convert_to_pdf()  # convert to pdf
-pdf = fitz.open("pdf", b)  # open as pdf
+pdf = pymupdf.open("pdf", b)  # open as pdf
 
 toc = doc.get_toc()  # table of contents of input
 pdf.set_toc(toc)  # simply set it for output
 meta = doc.metadata  # read and set metadata
 if not meta["producer"]:
-    meta["producer"] = "PyMuPDF v" + fitz.VersionBind
+    meta["producer"] = "PyMuPDF v" + pymupdf.VersionBind
 
 if not meta["creator"]:
     meta["creator"] = "PyMuPDF PDF converter"
@@ -60,7 +60,7 @@ for pinput in doc:  # iterate through input pages
     link_cnti += len(links)  # count how many
     pout = pdf[pinput.number]  # read corresp. output page
     for l in links:  # iterate though the links
-        if l["kind"] == fitz.LINK_NAMED:  # we do not handle named links
+        if l["kind"] == pymupdf.LINK_NAMED:  # we do not handle named links
             link_skip += 1  # count them
             continue
         pout.insert_link(l)  # simply output the others

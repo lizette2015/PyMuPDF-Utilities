@@ -7,13 +7,13 @@ of a set of optional content groups.
 Here we create a PDF page with two objects of which exactly one is shown
 at any time.
 """
-import fitz
+import pymupdf
 
 # source file with at least 2 pages
-src = fitz.open("source.pdf")
+src = pymupdf.open("source.pdf")
 
 # new PDF with one page
-doc = fitz.open()
+doc = pymupdf.open()
 page = doc.new_page()
 
 # define 2 rectangles: upper and lower half page

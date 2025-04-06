@@ -4,7 +4,7 @@ on a page.
 
 We use the page method 'get_text("words")' which delivers a list of all words.
 Every item contains the word's rectangle (given by its coordinates, not as a
-fitz.Rect in this case).
+pymupdf.Rect in this case).
 From this list we subselect words positioned in the given rectangle (or at
 least intersect).
 We sort this sublist by ascending y-ccordinate, and then by ascending x value.
@@ -15,7 +15,7 @@ Remarks
 -------
 1. The script puts words in the same line, if the y1 value of their bbox are
    *almost* equal. Allowing more tolerance here is imaginable, e.g. by
-   taking the fitz.IRect of the word rectangles instead.
+   taking the pymupdf.IRect of the word rectangles instead.
 
 2. Reconstructed lines will contain words with exactly one space between them.
    So any original multiple spaces will be lost.
@@ -26,7 +26,7 @@ Remarks
    they are extremely simple to use: Page.get_textbox(rect), or
    Page.get_text("text", clip=rect), etc. is all you need.
 """
-import fitz
+import pymupdf
 
 
 def make_text(words):
@@ -48,7 +48,7 @@ def make_text(words):
     return "\n".join([" ".join(line[1]) for line in lines])
 
 
-doc = fitz.open("search.pdf")  # any supported document type
+doc = pymupdf.open("search.pdf")  # any supported document type
 page = doc[0]  # we want text from this page
 
 """
@@ -80,7 +80,7 @@ The resulting sublist is then converted to a string by calling above funtion.
 # ----------------------------------------------------------------------------
 # Case 1: select the words *fully contained* in the rect
 # ----------------------------------------------------------------------------
-mywords = [w for w in words if fitz.Rect(w[:4]) in rect]
+mywords = [w for w in words if pymupdf.Rect(w[:4]) in rect]
 
 print("Select the words strictly contained in rectangle")
 print("------------------------------------------------")
@@ -89,7 +89,7 @@ print(make_text(mywords))
 # ----------------------------------------------------------------------------
 # Case 2: select the words *intersecting* the rect
 # ----------------------------------------------------------------------------
-mywords = [w for w in words if fitz.Rect(w[:4]).intersects(rect)]
+mywords = [w for w in words if pymupdf.Rect(w[:4]).intersects(rect)]
 
 print("\nSelect the words intersecting the rectangle")
 print("-------------------------------------------")

@@ -1,11 +1,11 @@
-import fitz
+import pymupdf
 
 """
 This marks a longer, unique sentence on the page.
 The parameters 'start', 'stop' and 'clip' are fully computed from the
 returned hit rectangles.
 """
-doc = fitz.open("search.pdf")
+doc = pymupdf.open("search.pdf")
 page = doc[0]
 
 # Search for this text. It is show with hyphens on the page, which we can
@@ -24,7 +24,7 @@ rl = page.search_for(
 # You should check success here!
 start = rl[0].tl  # top-left of first rectangle
 stop = rl[-1].br  # bottom-right of last rectangle
-clip = fitz.Rect()  # build clip as union of the hit rectangles
+clip = pymupdf.Rect()  # build clip as union of the hit rectangles
 for r in rl:
     clip |= r
 

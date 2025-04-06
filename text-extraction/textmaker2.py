@@ -13,11 +13,11 @@ Evince on Linux is not as bad. I don't know how OSX tools would compare.
 
 The only possible solution to recover the text is layout preservation.
 """
-import fitz
+import pymupdf
 import random
 
-font = fitz.Font("cjk")  # use same font for output
-doc = fitz.open("textmaker.pdf")
+font = pymupdf.Font("cjk")  # use same font for output
+doc = pymupdf.open("textmaker.pdf")
 page = doc[0]
 w = page.rect.width
 h = page.rect.height
@@ -28,10 +28,10 @@ for b in page.get_text("rawdict")["blocks"]:
             for c in s["chars"]:
                 chars.append(c)
 doc.close()
-doc = fitz.open()  # make new PDF
+doc = pymupdf.open()  # make new PDF
 page = doc.new_page(width=w, height=h)  # new page with the old dimensions
 random.shuffle(chars)  # arbitrarily re-order characters
-tw = fitz.TextWriter(page.rect)
+tw = pymupdf.TextWriter(page.rect)
 # write the re-ordered characters to the page
 for c in chars:
     tw.append(c["origin"], c["c"], font=font)

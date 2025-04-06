@@ -29,9 +29,9 @@ functions - please see the SciPy documentation for background.
 
 from __future__ import print_function
 import math
-import fitz
+import pymupdf
 
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 
 
 def bsinPoints(pb, pe):
@@ -109,14 +109,14 @@ def rot_points(pnts, pb, alfa):
         if r > 0:
             s /= r
         np = (s.x * calfa - s.y * salfa, s.y * calfa + s.x * salfa)
-        points.append(pb + fitz.Point(np) * r)
+        points.append(pb + pymupdf.Point(np) * r)
     return points
 
 
 if __name__ == "__main__":
-    from fitz.utils import getColor
+    from pymupdf.utils import getColor
 
-    doc = fitz.open()  # a new PDF
+    doc = pymupdf.open()  # a new PDF
     page = doc.new_page()  # a new page in it
     img = page.new_shape()  # start a Shape
     red = getColor("red")  # line color for sine
@@ -126,8 +126,8 @@ if __name__ == "__main__":
 
     # Define start / end points of x axis that we want to use as 0 and 2*pi.
     # They may be positioned in any way.
-    pb = fitz.Point(200, 200)  # begin, treated as (0, 0)
-    pe = fitz.Point(400, 100)  # end, treated as (2*pi, 0)
+    pb = pymupdf.Point(200, 200)  # begin, treated as (0, 0)
+    pe = pymupdf.Point(400, 100)  # end, treated as (2*pi, 0)
 
     # compute auxiliary end point pe1 with same y coord. as pb
     alfa = img.horizontal_angle(pb, pe)  # connection angle towards x-axis
@@ -136,11 +136,11 @@ if __name__ == "__main__":
 
     # first draw a rectangle in which the functions graphs will later appear
     f = abs(pe - pb) * 0.5 / math.pi  # represents 1 unit
-    rect = fitz.Rect(pb.x - 5, pb.y - f - 5, pe1.x + 5, pb.y + f + 5)
+    rect = pymupdf.Rect(pb.x - 5, pb.y - f - 5, pe1.x + 5, pb.y + f + 5)
     img.draw_rect(rect)  # draw it
 
     # compute morph parameter for image adjustments
-    morph = (pb, fitz.Matrix(math.degrees(-alfa)))
+    morph = (pb, pymupdf.Matrix(math.degrees(-alfa)))
 
     # finish the envelopping rectangle
     img.finish(fill=yellow, morph=morph)  # rotate it around begin point
@@ -169,9 +169,9 @@ if __name__ == "__main__":
     img.finish(width=w)  # draw x-axis (default color)
 
     # insert "sine" / "cosine" legend text
-    r1 = fitz.Rect(rect.x0 + 15, rect.y1 - 20, rect.br)
+    r1 = pymupdf.Rect(rect.x0 + 15, rect.y1 - 20, rect.br)
     img.insert_textbox(r1, "sine", color=red, fontsize=8, morph=morph)
-    r2 = fitz.Rect(rect.x0 + 15, rect.y1 - 10, rect.br)
+    r2 = pymupdf.Rect(rect.x0 + 15, rect.y1 - 10, rect.br)
     img.insert_textbox(r2, "cosine", color=blue, fontsize=8, morph=morph)
 
     img.commit()  # commit with overlay = True

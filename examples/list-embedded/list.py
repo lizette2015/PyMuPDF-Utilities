@@ -20,10 +20,10 @@ PyMuPDF
 
 from __future__ import print_function
 import sys
-import fitz
+import pymupdf
 
 fn = sys.argv[1]
-doc = fitz.open(fn)
+doc = pymupdf.open(fn)
 
 name_len = filename_len = 0
 total_len = total_size = 0

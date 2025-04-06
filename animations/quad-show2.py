@@ -36,13 +36,13 @@ import math
 import os
 import time
 
-import fitz
+import pymupdf
 import PySimpleGUI as sg
 
 mytime = time.perf_counter
-if not list(map(int, fitz.VersionBind.split("."))) >= [1, 14, 5]:
+if not list(map(int, pymupdf.VersionBind.split("."))) >= [1, 14, 5]:
     raise SystemExit("need PyMuPDF v1.14.5 for this script")
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 
 # ------------------------------------------------------------------------------
 # make one page
@@ -55,7 +55,7 @@ def make_oval(i):
     The resulting page picture is passed back as an image and the PDF is
     dicarded again.
     """
-    doc = fitz.open()  # dummy PDF
+    doc = pymupdf.open()  # dummy PDF
     red = (1, 0, 0)
     blue = (0, 0, 1)
     page = doc.new_page(width=400, height=300)  # page dimensions as you like
@@ -68,7 +68,7 @@ def make_oval(i):
     else:
         u = 0
         o = -f
-    q1 = fitz.Quad(
+    q1 = pymupdf.Quad(
         q.ul + (q.ur - q.ul) * o,
         q.ul + (q.ur - q.ul) * (1 - o),
         q.ll + (q.lr - q.ll) * u,

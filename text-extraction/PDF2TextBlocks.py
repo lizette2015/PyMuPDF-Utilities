@@ -25,7 +25,7 @@ Changes
 2021-06-29: simplify block sorting and make script importable.
 """
 
-import fitz
+import pymupdf
 import sys
 
 
@@ -35,7 +35,7 @@ def main(*args):
     else:
         filename = args[0]
     ofile = filename + ".txt"
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     fout = open(ofile, "wb")
 
     for page in doc:

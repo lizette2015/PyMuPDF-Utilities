@@ -27,11 +27,11 @@ except:
     raise SystemExit(__file__ + " needs wxPython.")
 
 try:
-    import fitz
+    import pymupdf
 
-    print(fitz.__doc__)
+    print(pymupdf.__doc__)
 except:
-    raise SystemExit(__file__ + " needs PyMuPDF(fitz).")
+    raise SystemExit(__file__ + " needs PyMuPDF(pymupdf).")
 
 try:
     from PageFormat import FindFit
@@ -51,7 +51,7 @@ except ImportError:
 app = None
 app = wx.App()
 assert wx.VERSION[0:3] >= (3, 0, 2), "need wxPython 3.0.2 or later"
-assert tuple(map(int, fitz.VersionBind.split("."))) >= (
+assert tuple(map(int, pymupdf.VersionBind.split("."))) >= (
     1,
     9,
     2,
@@ -120,7 +120,7 @@ class PDFdisplay(wx.Dialog):
         # ======================================================================
         # open the document with MuPDF when dialog gets created
         # ======================================================================
-        self.doc = fitz.open(filename)  # create Document object
+        self.doc = pymupdf.open(filename)  # create Document object
         if self.doc.needs_pass:  # check password protection
             self.decrypt_doc()
         if self.doc.is_encrypted:  # quit if we cannot decrpt
@@ -137,7 +137,7 @@ class PDFdisplay(wx.Dialog):
         # define zooming matrix for displaying PDF page images
         # we increase images by 20%, so take 1.2 as scale factors
         # ======================================================================
-        self.matrix = fitz.Matrix(zoom, zoom)  # will use a constant zoom
+        self.matrix = pymupdf.Matrix(zoom, zoom)  # will use a constant zoom
 
         """
         =======================================================================
@@ -223,24 +223,24 @@ class PDFdisplay(wx.Dialog):
             evt.Skip()
             return
         lnk = self.current_lnks[self.current_idx]
-        if lnk["kind"] == fitz.LINK_GOTO:
+        if lnk["kind"] == pymupdf.LINK_GOTO:
             self.TextToPage.Value = str(lnk["page"] + 1)
             self.GotoPage(evt)
-        elif lnk["kind"] == fitz.LINK_URI:
+        elif lnk["kind"] == pymupdf.LINK_URI:
             import webbrowser
 
             try:
                 webbrowser.open_new(self.link_texts[self.current_idx])
             except:
                 pass
-        elif lnk["kind"] == fitz.LINK_GOTOR:
+        elif lnk["kind"] == pymupdf.LINK_GOTOR:
             import subprocess
 
             try:
                 subprocess.Popen(self.link_texts[self.current_idx])
             except:
                 pass
-        elif lnk["kind"] == fitz.LINK_NAMED:
+        elif lnk["kind"] == pymupdf.LINK_NAMED:
             if lnk["name"] == "FirstPage":
                 self.TextToPage.Value = "1"
             elif lnk["name"] == "LastPage":
@@ -368,11 +368,11 @@ class PDFdisplay(wx.Dialog):
                 int(r.height * zoom_h),
             )
             dc.DrawRectangle(wx_r[0], wx_r[1], wx_r[2] + 1, wx_r[3] + 1)
-            if lnk["kind"] == fitz.LINK_GOTO:
+            if lnk["kind"] == pymupdf.LINK_GOTO:
                 txt = "page " + str(lnk["page"] + 1)
-            elif lnk["kind"] == fitz.LINK_GOTOR:
+            elif lnk["kind"] == pymupdf.LINK_GOTOR:
                 txt = lnk["file"]
-            elif lnk["kind"] == fitz.LINK_URI:
+            elif lnk["kind"] == pymupdf.LINK_URI:
                 txt = lnk["uri"]
             else:
                 txt = "unkown destination"

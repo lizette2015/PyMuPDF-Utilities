@@ -23,7 +23,7 @@ We also interpret keyboard events (PageDown / PageUp) and mouse wheel actions
 to support paging as if a button was clicked. Similarly, we do not include
 a 'Quit' button. Instead, the ESCAPE key can be used, or cancelling the form.
 To improve paging performance, we are not directly creating pixmaps from
-pages, but instead from the fitz.DisplayList of the page. Each display list
+pages, but instead from the pymupdf.DisplayList of the page. Each display list
 will be stored in a list and looked up by page number. This way, zooming
 pixmaps and page re-visits will re-use a once-created display list.
 
@@ -36,11 +36,11 @@ PyMuPDF v1.14.5+, PySimpleGUI, tkinter
 """
 
 import sys
-import fitz
+import pymupdf
 
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 
-if not tuple(map(int, fitz.VersionBind.split("."))) >= (1, 14, 5):
+if not tuple(map(int, pymupdf.VersionBind.split("."))) >= (1, 14, 5):
     raise SystemExit("need PyMuPDF v1.14.5 for this script")
 
 if sys.platform == "win32":
@@ -85,7 +85,7 @@ if fname.endswith((".py", ".c", ".cpp", ".cs", ".h")):
     ftype = "txt"
 else:
     ftype = None
-doc = fitz.open(fname, filetype=ftype)
+doc = pymupdf.open(fname, filetype=ftype)
 if not ftype is None:
     doc.layout(width=600, height=800, fontsize=12)
 page_count = len(doc)
@@ -121,7 +121,7 @@ def get_page(pno, zoom=False, max_size=None):
         if zoom_0 == 1:
             zoom_0 = min(max_size[0] / r.width, max_size[1] / r.height)
 
-    mat_0 = fitz.Matrix(zoom_0, zoom_0)
+    mat_0 = pymupdf.Matrix(zoom_0, zoom_0)
 
     if not zoom:  # show the total page
         pix = dlist.get_pixmap(matrix=mat_0, alpha=False)
@@ -136,9 +136,9 @@ def get_page(pno, zoom=False, max_size=None):
         tl.y += zoom[2] * (h2 / 2)  # provided, but ...
         tl.y = max(0, tl.y)  # stay within ...
         tl.y = min(h2, tl.y)  # the page rect
-        clip = fitz.Rect(tl, tl.x + w2, tl.y + h2)
+        clip = pymupdf.Rect(tl, tl.x + w2, tl.y + h2)
         # clip rect is ready, now fill it
-        mat = mat_0 * fitz.Matrix(2, 2)  # zoom matrix
+        mat = mat_0 * pymupdf.Matrix(2, 2)  # zoom matrix
         pix = dlist.get_pixmap(alpha=False, matrix=mat, clip=clip)
     img = pix.tobytes("ppm")  # make PPM image from pixmap for tkinter
     return img, clip.tl  # return image, clip position

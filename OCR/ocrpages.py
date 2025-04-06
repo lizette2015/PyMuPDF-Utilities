@@ -17,7 +17,7 @@ Requires
 ---------
 ocrmypdf
 """
-import fitz
+import pymupdf
 import ocrmypdf
 import sys
 import io
@@ -26,7 +26,7 @@ import io
 def ocr_the_page(page):
     """Extract the text from passed-in PDF page."""
     src = page.parent  # the page's document
-    doc = fitz.open()  # make temporary 1-pager
+    doc = pymupdf.open()  # make temporary 1-pager
     doc.insert_pdf(src, from_page=page.number, to_page=page.number)
     pdfbytes = doc.tobytes()
     inbytes = io.BytesIO(pdfbytes)  # transform to BytesIO object
@@ -39,13 +39,13 @@ def ocr_the_page(page):
         # add more paramneters, e.g. to enforce OCR-ing, etc., e.g.
         # force_ocr=True, redo_ocr=True
     )
-    ocr_pdf = fitz.open("pdf", outbytes.getvalue())  # read output as fitz PDF
+    ocr_pdf = pymupdf.open("pdf", outbytes.getvalue())  # read output as pymupdf PDF
     text = ocr_pdf[0].get_text()  # ...and extract text from the page
     return text  # return it
 
 
 if __name__ == "__main__":
-    doc = fitz.open(sys.argv[1])
+    doc = pymupdf.open(sys.argv[1])
     for page in doc:
         text = ocr_the_page(page)
         print("Text from page %i:" % page.number)

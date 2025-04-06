@@ -19,7 +19,7 @@ PyMuPDF
 """
 
 from __future__ import print_function
-import fitz
+import pymupdf
 from ParseTab import ParseTab
 
 # ==============================================================================
@@ -32,7 +32,7 @@ After reading a page, we
     rectangle. We use zero or large numbers to specify "no limit".
 (3) call ParseTab to get the parsed table
 """
-doc = fitz.Document("input.pdf")
+doc = pymupdf.Document("input.pdf")
 pno = 35
 page = doc.load_page(pno)
 

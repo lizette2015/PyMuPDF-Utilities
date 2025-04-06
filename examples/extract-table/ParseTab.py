@@ -1,5 +1,5 @@
 """
-Return a Python list of lists from the words found in a fitz.Document page
+Return a Python list of lists from the words found in a pymupdf.Document page
 -------------------------------------------------------------------------------
 License: GNU GPL V3
 (c) 2018 Jorj X. McKie
@@ -24,7 +24,7 @@ PyMuPDF v1.12.0 or later
 
 from operator import itemgetter
 from itertools import groupby
-import fitz
+import pymupdf
 
 
 # ==============================================================================
@@ -33,14 +33,14 @@ import fitz
 def ParseTab(page, bbox, columns=None):
     """Returns the parsed table of a page in a PDF / (open) XPS / EPUB document.
     Parameters:
-    page: fitz.Page object
+    page: pymupdf.Page object
     bbox: containing rectangle, list of numbers [xmin, ymin, xmax, ymax]
     columns: optional list of column coordinates. If None, columns are generated
     Returns the parsed table as a list of lists of strings.
     The number of rows is determined automatically
     from parsing the specified rectangle.
     """
-    tab_rect = fitz.Rect(bbox).irect
+    tab_rect = pymupdf.Rect(bbox).irect
     xmin, ymin, xmax, ymax = tuple(tab_rect)
 
     if tab_rect.is_empty or tab_rect.is_infinite:
@@ -67,7 +67,7 @@ def ParseTab(page, bbox, columns=None):
 
     # get words contained in table rectangle and distribute them into columns
     for w in words:
-        ir = fitz.Rect(w[:4]).irect  # word rectangle
+        ir = pymupdf.Rect(w[:4]).irect  # word rectangle
         if ir in tab_rect:
             cnr = 0  # column index
             for i in range(1, len(coltab)):  # loop over column coordinates

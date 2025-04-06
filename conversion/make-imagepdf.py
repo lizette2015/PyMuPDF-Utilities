@@ -8,7 +8,7 @@ Date: 2021-08-30
 import os
 import sys
 
-import fitz
+import pymupdf
 
 
 def main(doc, outfile=None, pages=None, dpi=96):
@@ -25,8 +25,8 @@ def main(doc, outfile=None, pages=None, dpi=96):
     if pages is None:
         pages = range(doc.page_count)
     zoom = dpi / 72
-    mat = fitz.Matrix(zoom, zoom)
-    pdfout = fitz.open()
+    mat = pymupdf.Matrix(zoom, zoom)
+    pdfout = pymupdf.open()
     for pno in pages:
         page = doc[pno]
         pix = page.get_pixmap(matrix=mat)
@@ -39,5 +39,5 @@ def main(doc, outfile=None, pages=None, dpi=96):
 
 if __name__ == "__main__":
     filename = sys.argv[1]
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     main(doc)

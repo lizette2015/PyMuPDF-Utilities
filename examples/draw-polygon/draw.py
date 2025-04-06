@@ -20,20 +20,20 @@ Dependencies
 PyMuPDF
 """
 
-import fitz
+import pymupdf
 
-print(fitz.__doc__)
+print(pymupdf.__doc__)
 
 outpdf = "output.pdf"
 outsvg = "output.svg"
-doc = fitz.open()
+doc = pymupdf.open()
 page = doc.new_page()
 img = page.new_shape()
 nedge = 5  # number of polygon edges
 breadth = 2  # wave amplitude
 beta = -1.0 * 360 / nedge  # our angle, drawn clockwise
-center = fitz.Point(300, 300)  # center of circle
-p0 = fitz.Point(300, 200)  # start here (1st edge = north)
+center = pymupdf.Point(300, 300)  # center of circle
+p0 = pymupdf.Point(300, 200)  # start here (1st edge = north)
 p1 = +p0  # save as last edge to add
 points = [p0]  # to store the polygon edges
 

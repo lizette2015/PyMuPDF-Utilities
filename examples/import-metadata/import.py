@@ -20,7 +20,7 @@ PyMuPDF
 """
 
 import csv
-import fitz
+import pymupdf
 import argparse
 
 parser = argparse.ArgumentParser(
@@ -42,7 +42,7 @@ print("csv file", args.csv)
 print("pdf file", args.pdf)
 print("----------------------------------------")
 
-doc = fitz.open(args.pdf)
+doc = pymupdf.open(args.pdf)
 oldmeta = doc.metadata
 print("old metadata:")
 for k, v in oldmeta.items():
